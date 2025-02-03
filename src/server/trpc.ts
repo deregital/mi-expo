@@ -1,7 +1,6 @@
 import { auth } from '@/server/auth';
 import { fetchClient } from '@/server/fetchClient';
 import { initTRPC, TRPCError } from '@trpc/server';
-import { type JWT } from 'next-auth/jwt';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
@@ -31,15 +30,16 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
-export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-  const session = ctx.session as unknown as JWT | undefined | null;
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  const session = ctx.session;
 
-  if (!session) {
+  if (!session || !session.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
   return next({
     ctx: {
+      session: { ...session, user: session.user },
       fetch: fetchClient,
     },
   });

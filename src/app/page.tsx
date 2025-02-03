@@ -1,10 +1,19 @@
 import { InstallPWAButton } from '@/components/common/install-pwa-button';
+import { auth, signIn, signOut } from '@/server/auth';
+import { trpc } from '@/server/trpc/server';
 import Image from 'next/image';
 
-export default function Home() {
+export default async function Home() {
+  const data = await trpc.hello({
+    name: 'Ricardo Fort',
+  });
+
+  const session = await auth();
+
   return (
     <div className='flex items-center justify-center flex-col h-full'>
       <h1 className='text-7xl'>Mi expo</h1>
+      <p>{data}</p>
       <Image
         alt='Alt'
         src='https://media.ambito.com/p/fa02077a75256f92036786bea42ad093/adjuntos/239/imagenes/039/765/0039765942/ricardo-fortjpg.jpg'
@@ -12,6 +21,25 @@ export default function Home() {
         height={500}
       />
       <InstallPWAButton />
+      {session ? (
+        <form
+          action={async () => {
+            'use server';
+            await signOut();
+          }}
+        >
+          <button type='submit'>Logout</button>
+        </form>
+      ) : (
+        <form
+          action={async () => {
+            'use server';
+            await signIn();
+          }}
+        >
+          <button type='submit'>Login</button>
+        </form>
+      )}
     </div>
   );
 }

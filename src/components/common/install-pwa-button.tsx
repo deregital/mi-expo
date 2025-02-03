@@ -7,6 +7,7 @@ export function InstallPWAButton() {
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showInstall, setShowInstall] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false); // si ya está instalada la app
 
   useEffect(() => {
     function handleBeforeInstallPrompt(event: Event) {
@@ -14,7 +15,6 @@ export function InstallPWAButton() {
       setInstallPrompt(event as BeforeInstallPromptEvent);
 
       if (!window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('Install prompt fired');
         setShowInstall(true);
       }
     }

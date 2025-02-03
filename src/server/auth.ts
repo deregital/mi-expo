@@ -2,7 +2,7 @@ import NextAuth, { CredentialsSignin, type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { fetchClient } from '@/server/fetchClient';
 import { type JWT } from 'next-auth/jwt';
-import { loginSchema } from 'expo-backend-types';
+import { loginSchema, type Role } from 'expo-backend-types';
 import { ZodError } from 'zod';
 
 declare module 'next-auth/jwt' {
@@ -11,6 +11,7 @@ declare module 'next-auth/jwt' {
       id: string;
       username: string;
     };
+    role: Role;
     backendTokens: {
       accessToken: string;
       refreshToken: string;
@@ -25,7 +26,7 @@ declare module 'next-auth' {
     user?: {
       id: string;
       username: string;
-      esAdmin: boolean;
+      role: Role;
     } & DefaultSession['user'];
   }
 }
@@ -47,8 +48,7 @@ export async function refreshToken(token: JWT): Promise<JWT> {
   };
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET,
+const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     session: ({ session, token }) => {
       fetchClient.use({
@@ -60,6 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return request;
         },
       });
+
       return {
         ...session,
         backendTokens: {
@@ -69,7 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ...session.user,
           id: token.sub,
           username: token.username,
-          esAdmin: token.esAdmin,
+          role: token.role,
         },
       };
     },
@@ -113,6 +114,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
           );
 
+          console.log('response', response);
+
           if ((response.status !== 201 || !data?.user) && error) {
             const message = error.message[0] || 'Error desconocido';
             throw new CustomError(message);
@@ -121,7 +124,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return {
             id: data.user.id!,
             username: data.user.username!,
-            esAdmin: data.user.role === 'ADMIN',
+            role: data.user.role,
             backendTokens: data.backendTokens,
           };
         } catch (error) {
@@ -148,7 +151,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: '/login',
   },
+  secret: process.env.NEXTAUTH_SECRET,
 });
+
+export { handlers, signIn, signOut, auth };
 
 export class CustomError extends CredentialsSignin {
   code = CustomError.CUSTOM_ERROR_CODE;

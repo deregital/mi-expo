@@ -1,15 +1,16 @@
-import { auth } from '@/server/auth';
+import { createTRPCContext } from '@/server/trpc';
 import { initTRPC } from '@trpc/server';
+import { headers } from 'next/headers';
 import { cache } from 'react';
 import superjson from 'superjson';
 
-export const createTRPCContext = cache(async (opts: { headers: Headers }) => {
-  const session = await auth();
+export const createContext = cache(async () => {
+  const heads = new Headers(await headers());
+  heads.set('x-trpc-source', 'rsc');
 
-  return {
-    session,
-    ...opts,
-  };
+  return createTRPCContext({
+    headers: heads,
+  });
 });
 
 const t = initTRPC.create({
