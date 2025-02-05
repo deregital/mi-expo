@@ -10,12 +10,17 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.1",
     "@tanstack/react-query": "^5.64.0",
     "@trpc/client": "^11.0.0-rc.700",
     "@trpc/react-query": "^11.0.0-rc.700",
     "@trpc/server": "^11.0.0-rc.700",
+    "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
-    "expo-backend-types": "^0.30.0",
+    "clsx": "^2.1.1",
+    "expo-backend-types": "^0.30.0-EXPO-308-auth.4",
+    "input-otp": "^1.4.2",
+    "lucide-react": "^0.474.0",
     "next": "15.1.4",
     "next-auth": "^5.0.0-beta.25",
     "openapi-fetch": "^0.13.4",
@@ -24,6 +29,8 @@
     "react-error-boundary": "^5.0.0",
     "server-only": "^0.0.1",
     "superjson": "^2.2.2",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
     "web-push": "^3.6.7",
     "zod": "^3.24.1"
   },

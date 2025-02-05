@@ -41,6 +41,8 @@ const eslintConfig = [
         { argsIgnorePattern: '^_', args: 'none' },
       ],
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', args: 'none' }],
+      '@typescript-eslint/no-require-imports': 'off',
+
       'unused-imports/no-unused-imports': 'warn',
       'react/function-component-definition': [
         'warn',
