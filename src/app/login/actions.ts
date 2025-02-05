@@ -1,33 +1,50 @@
 'use server';
 
-import { CustomError, signIn } from '@/server/auth';
+import { signIn } from '@/server/auth';
+import { loginSchema, type LoginDto } from 'expo-backend-types';
+import { redirect } from 'next/navigation';
 
-export async function authenticate({
-  username,
-  password,
-}: {
-  username: string;
-  password: string;
-}) {
+export interface ActionResponse {
+  success: boolean;
+  errors?: string | string[];
+  inputs?: LoginDto;
+}
+
+export async function authenticate(
+  prevState: ActionResponse | null,
+  formData: FormData,
+): Promise<ActionResponse> {
+  const rawData: LoginDto = {
+    username: formData.get('username') as string,
+    password: formData.get('password') as string,
+  };
   try {
+    const validatedData = loginSchema.safeParse(rawData);
+
+    if (!validatedData.success) {
+      return {
+        success: false,
+        errors: Object.values(validatedData.error.flatten().fieldErrors).map(
+          (error) => error[0],
+        ),
+        inputs: rawData,
+      };
+    }
+
     await signIn('credentials', {
-      username,
-      password,
+      username: validatedData.data.username,
+      password: validatedData.data.password,
       redirectTo: '/',
       redirect: false,
     });
-
-    return { success: true, message: 'login successful' };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
-    if (err.code === CustomError.CUSTOM_ERROR_CODE) {
-      return {
-        error: { message: err.message },
-      };
-    }
     return {
       success: false,
-      error: { message: 'Failed to login', error: err },
+      errors: err.message,
+      inputs: rawData,
     };
   }
+
+  redirect('/');
 }

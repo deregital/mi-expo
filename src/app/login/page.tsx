@@ -9,5 +9,9 @@ export default async function LoginPage() {
     redirect('/');
   }
 
-  return <LoginClient />;
+  return (
+    <div className='h-[100dvh] w-full flex items-center justify-center'>
+      <LoginClient />
+    </div>
+  );
 }

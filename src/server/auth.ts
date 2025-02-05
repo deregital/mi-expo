@@ -114,8 +114,6 @@ const { handlers, signIn, signOut, auth } = NextAuth({
             },
           );
 
-          console.log('response', response);
-
           if ((response.status !== 201 || !data?.user) && error) {
             const message = error.message[0] || 'Error desconocido';
             throw new CustomError(message);
