@@ -1,10 +1,12 @@
 'use client';
 
-import { type ActionResponse, authenticate } from '@/app/login/actions';
+import { authenticate } from '@/app/(auth)/login/username-password/actions';
 import { Button } from '@/components/ui/button';
+import { type ActionResponse } from '@/lib/action-type';
+import { type LoginDto } from 'expo-backend-types';
 import { useActionState } from 'react';
 
-const initialState: ActionResponse = {
+const initialState: ActionResponse<LoginDto> = {
   success: false,
 };
 

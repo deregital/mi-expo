@@ -1,19 +1,14 @@
 'use server';
 
+import { type ActionResponse } from '@/lib/action-type';
 import { signIn } from '@/server/auth';
 import { loginSchema, type LoginDto } from 'expo-backend-types';
 import { redirect } from 'next/navigation';
 
-export interface ActionResponse {
-  success: boolean;
-  errors?: string | string[];
-  inputs?: LoginDto;
-}
-
 export async function authenticate(
-  prevState: ActionResponse | null,
+  prevState: ActionResponse<LoginDto> | null,
   formData: FormData,
-): Promise<ActionResponse> {
+): Promise<ActionResponse<LoginDto>> {
   const rawData: LoginDto = {
     username: formData.get('username') as string,
     password: formData.get('password') as string,
