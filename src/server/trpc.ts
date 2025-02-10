@@ -21,10 +21,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       data: {
         ...shape.data,
         zodError:
-          (error.cause as ZodError).name === 'ZodError' ||
-          error.cause instanceof ZodError
-            ? (error.cause as ZodError).flatten()
-            : null,
+          error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -47,3 +44,4 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
+export const createCallerFactory = t.createCallerFactory;
