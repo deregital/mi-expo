@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@tanstack/react-query": "^5.64.0",
     "@trpc/client": "^11.0.0-rc.700",
@@ -20,7 +21,7 @@
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
-    "expo-backend-types": "^0.30.0-EXPO-308-auth.5",
+    "expo-backend-types": "^0.30.0-EXPO-308-auth.10",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.474.0",
     "next": "15.1.4",

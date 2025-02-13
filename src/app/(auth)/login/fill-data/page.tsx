@@ -1,3 +1,4 @@
+import { FillDataForm } from '@/app/(auth)/login/fill-data/components/fill-data-form';
 import { type VerifyOtpResponseDto } from 'expo-backend-types';
 import { cookies } from 'next/headers';
 
@@ -12,5 +13,9 @@ export default async function FillDataPage() {
     profileDataRaw.value,
   ) as VerifyOtpResponseDto['profile'];
 
-  return <pre>{JSON.stringify(profileData, null, 2)}</pre>;
+  return (
+    <div className='h-[80%] overflow-y-auto w-full px-2'>
+      <FillDataForm data={profileData} />
+    </div>
+  );
 }

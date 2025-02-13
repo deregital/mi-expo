@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 
 export const otpRouter = router({
   send: publicProcedure.input(sendOtpSchema).mutation(async ({ input }) => {
-    const { error } = await fetchClient.POST('/otp/send', {
+    const { error, data } = await fetchClient.POST('/otp/send', {
       body: {
         phoneNumber: input.phoneNumber,
       },
@@ -15,10 +15,14 @@ export const otpRouter = router({
       throw new Error(error.message[0]);
     }
 
+    if (data.response.hasVerified && !data.response.hasUsername) {
+      return data.response;
+    }
+
     const cookieStore = await cookies();
     cookieStore.set('phoneNumber', input.phoneNumber);
 
-    return { success: true };
+    return data.response;
   }),
   verify: publicProcedure.input(verifyOtpSchema).mutation(async ({ input }) => {
     const { error, data } = await fetchClient.POST('/otp/verify', {
