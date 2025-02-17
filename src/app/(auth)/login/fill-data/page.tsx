@@ -1,4 +1,4 @@
-import { FillDataForm } from '@/app/(auth)/login/fill-data/components/fill-data-form';
+import { FillDataForm } from '@/app/(auth)/login/fill-data/components/FillDataForm';
 import { type VerifyOtpResponseDto } from 'expo-backend-types';
 import { cookies } from 'next/headers';
 

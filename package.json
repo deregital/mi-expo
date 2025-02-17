@@ -21,7 +21,7 @@
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
-    "expo-backend-types": "^0.30.0-EXPO-308-auth.10",
+    "expo-backend-types": "^0.30.0-EXPO-308-auth.19",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.474.0",
     "next": "15.1.4",

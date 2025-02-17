@@ -14,6 +14,8 @@ import {
 
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { type ZodSchema } from 'zod';
+import { useFieldOptionalityCheck } from '@/utils/zod';
 
 const Form = FormProvider;
 
@@ -42,7 +44,7 @@ function FormField<
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
-  const { getFieldState, formState } = useFormContext();
+  const { getFieldState, formState, control } = useFormContext();
 
   const fieldState = getFieldState(fieldContext.name, formState);
 
@@ -58,6 +60,7 @@ const useFormField = () => {
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
+    schema: control._options.context as ZodSchema,
     ...fieldState,
   };
 };
@@ -87,8 +90,10 @@ FormItem.displayName = 'FormItem';
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => {
-  const { error, formItemId } = useFormField();
+>(({ className, children, ...props }, ref) => {
+  const { error, formItemId, name, schema } = useFormField(); // Context with zod schema
+
+  const isFieldOptionalBasedOnSchema = useFieldOptionalityCheck(name, schema);
 
   return (
     <Label
@@ -96,7 +101,10 @@ const FormLabel = React.forwardRef<
       className={cn(error && 'text-destructive', className)}
       htmlFor={formItemId}
       {...props}
-    />
+    >
+      {children}
+      {!isFieldOptionalBasedOnSchema && '*'}
+    </Label>
   );
 });
 FormLabel.displayName = 'FormLabel';
