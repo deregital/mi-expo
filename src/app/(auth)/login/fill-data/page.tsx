@@ -1,17 +1,20 @@
 import { FillDataForm } from '@/app/(auth)/login/fill-data/components/FillDataForm';
-import { type VerifyOtpResponseDto } from 'expo-backend-types';
-import { cookies } from 'next/headers';
+import { auth } from '@/server/auth';
+import { trpc } from '@/server/trpc/server';
+import { redirect } from 'next/navigation';
 
 export default async function FillDataPage() {
-  const cookiesStore = await cookies();
-  const profileDataRaw = cookiesStore.get('profileData');
-  if (!profileDataRaw) {
-    return <></>;
+  const user = await auth();
+
+  if (!user?.user?.id) {
+    redirect('/login');
   }
 
-  const profileData = JSON.parse(
-    profileDataRaw.value,
-  ) as VerifyOtpResponseDto['profile'];
+  const profileData = await trpc.me.get();
+
+  if (!profileData) {
+    redirect('/login');
+  }
 
   return (
     <div className='h-[80%] overflow-y-auto w-full px-2'>

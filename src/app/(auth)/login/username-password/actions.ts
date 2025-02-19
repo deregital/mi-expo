@@ -26,7 +26,7 @@ export async function authenticate(
       };
     }
 
-    await signIn('credentials', {
+    await signIn('usernamePassword', {
       username: validatedData.data.username,
       password: validatedData.data.password,
       redirectTo: '/',

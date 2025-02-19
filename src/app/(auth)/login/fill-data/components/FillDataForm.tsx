@@ -1,14 +1,12 @@
 'use client';
 
-import { locationSchema, profileSchema } from 'expo-backend-types/schema';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import React from 'react';
 
-import { type z } from 'zod';
 import { trpc } from '@/server/trpc/client';
-import type { VerifyOtpResponseDto } from 'expo-backend-types';
+import type { MiExpoMeResponseDto } from 'expo-backend-types';
 import { FormFieldRow } from '@/app/(auth)/login/fill-data/components/FormFieldRow';
 import {
   SignupFormField,
@@ -16,50 +14,22 @@ import {
 } from '@/app/(auth)/login/fill-data/components/FormFields';
 import { PasswordInputs } from '@/app/(auth)/login/fill-data/components/PasswordInputs';
 import { Button } from '@/components/ui/button';
+import { formSchema, type FormSchema } from '@/lib/formSchema';
+import { signInUsernmePassword } from '@/app/(auth)/login/fill-data/actions';
+import { redirect } from 'next/navigation';
+import { signOut } from '@/server/auth';
 
 interface FillDataFormProps {
-  data: VerifyOtpResponseDto['profile'];
+  data: MiExpoMeResponseDto;
 }
-
-const formSchema = profileSchema
-  .partial({
-    secondaryPhoneNumber: true,
-  })
-  .pick({
-    username: true,
-    fullName: true,
-    instagram: true,
-    phoneNumber: true,
-    secondaryPhoneNumber: true,
-    mail: true,
-    dni: true,
-    birthDate: true,
-    gender: true,
-    password: true,
-  })
-  .extend({
-    confirmPassword: profileSchema.shape.password.optional(),
-    residence: locationSchema.pick({
-      city: true,
-      country: true,
-      latitude: true,
-      longitude: true,
-      state: true,
-    }),
-    birth: locationSchema.pick({
-      city: true,
-      country: true,
-      latitude: true,
-      longitude: true,
-    }),
-  });
-
-export type FormSchema = z.infer<typeof formSchema>;
 
 export function FillDataForm({ data }: FillDataFormProps) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: data,
+    defaultValues: {
+      ...data,
+      birthDate: data.birthDate ? new Date(data.birthDate) : null,
+    },
     shouldUnregister: true,
     context: formSchema,
   });
@@ -85,11 +55,40 @@ export function FillDataForm({ data }: FillDataFormProps) {
     trpc.location.getStateByCountry.useQuery(birthCountry, {
       enabled: !!birthCountry,
     });
-  // const updateProfile =
+  const updateProfile = trpc.profile.edit.useMutation({
+    onSuccess: async () => {
+      await signOut({
+        redirect: false,
+      });
+      await signInUsernmePassword({
+        username: form.getValues('username')!,
+        password: form.getValues('password')!,
+      });
+      redirect('/');
+    },
+  });
 
   return (
     <Form {...form}>
-      <form className='space-y-2' onSubmit={handleSubmit(() => {})}>
+      <form
+        className='space-y-2'
+        onSubmit={handleSubmit(() => {
+          const { birthDate, ...values } = form.getValues();
+          let birthDateString: string | null = null;
+          if (birthDate instanceof Date) {
+            birthDateString = birthDate?.toISOString() ?? null;
+          } else {
+            birthDateString = new Date(
+              birthDate as unknown as string,
+            ).toISOString();
+          }
+          updateProfile.mutate({
+            ...values,
+            id: data.id,
+            birthDate: birthDateString,
+          });
+        })}
+      >
         <SignupFormField
           name='username'
           label='Nombre de usuario'
@@ -233,6 +232,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
               const numberLat = Number(selectedCity.latitude);
               const numberLong = Number(selectedCity.longitude);
               form.setValue('birth.city', selectedCity.isoCode);
+              form.setValue('birth.state', '');
               form.setValue('birth.latitude', numberLat);
               form.setValue('birth.longitude', numberLong);
             }}
@@ -292,17 +292,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
         </FormFieldRow>
         <Button
           type='submit'
-          onClick={() => {
-            console.log(
-              'issubmitting',
-              form.formState.isSubmitting,
-              'isvalid',
-              form.formState.isValid,
-              'errors',
-              form.formState.errors,
-            );
-          }}
-          // disabled={form.formState.isSubmitting || !form.formState.isValid}
+          disabled={form.formState.isSubmitting || !form.formState.isValid}
         >
           Guardar
         </Button>
