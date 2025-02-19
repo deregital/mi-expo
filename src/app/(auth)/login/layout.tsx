@@ -8,7 +8,7 @@ export default async function LoginLayout({
 }) {
   const session = await auth();
 
-  if (session) {
+  if (session?.type === 'usernamePassword') {
     redirect('/');
   }
 

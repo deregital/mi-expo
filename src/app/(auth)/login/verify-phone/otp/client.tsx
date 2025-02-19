@@ -1,5 +1,6 @@
 'use client';
 
+import { signInPhoneNumber } from '@/app/(auth)/login/verify-phone/otp/actions';
 import { Button } from '@/components/ui/button';
 import { Form, FormField } from '@/components/ui/form';
 import {
@@ -23,7 +24,8 @@ export function VerifyPhoneOtpClient({
   const router = useRouter();
   const form = useForm<Pick<VerifyOtpDto, 'code'>>();
   const verifyOtpMutation = trpc.otp.verify.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await signInPhoneNumber({ phoneNumber });
       router.push('/login/fill-data');
     },
   });
@@ -48,6 +50,7 @@ export function VerifyPhoneOtpClient({
           name='code'
           render={({ field }) => (
             <InputOTP
+              autoFocus
               className='w-full'
               maxLength={6}
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}

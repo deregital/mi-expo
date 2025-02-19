@@ -36,9 +36,7 @@ export const otpRouter = router({
       throw new Error(error.message[0]);
     }
     if (data.success) {
-      const cookieStore = await cookies();
-      cookieStore.delete('phoneNumber');
-      cookieStore.set('profileData', JSON.stringify(data.profile));
+      return;
     } else {
       throw new Error('Algo salió mal');
     }
