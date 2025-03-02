@@ -6,7 +6,6 @@ import NextAuth, {
 import Credentials from 'next-auth/providers/credentials';
 import { fetchClient } from '@/server/fetchClient';
 import { type JWT } from 'next-auth/jwt';
-import { type Role } from 'expo-backend-types';
 import { ZodError } from 'zod';
 
 declare module 'next-auth/jwt' {
@@ -20,7 +19,6 @@ declare module 'next-auth/jwt' {
           id: string;
           phoneNumber: string;
         };
-    role: Role;
     backendTokens: {
       accessToken: string;
       refreshToken: string;
@@ -37,7 +35,6 @@ declare module 'next-auth' {
       | {
           id: string;
           username: string;
-          role: Role;
         }
       | {
           id: string;
@@ -170,7 +167,7 @@ const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           const { response, data, error } = await fetchClient.POST(
-            '/auth/login',
+            '/mi-expo/login',
             {
               body: {
                 password: credentials.password as string,
@@ -187,7 +184,6 @@ const { handlers, signIn, signOut, auth } = NextAuth({
           return {
             id: data.user.id!,
             username: data.user.username!,
-            role: data.user.role,
             backendTokens: data.backendTokens,
             type: 'usernamePassword',
           };

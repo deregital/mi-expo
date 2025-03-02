@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
@@ -103,34 +102,39 @@ export function SignupSelectField({
     <FormField
       control={formControl}
       name={name}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
-          <Select
-            onValueChange={(value) => {
-              customOnChange?.(value);
-              field.onChange(value);
-            }}
-            defaultValue={field.value?.toString() || ''}
-            disabled={disabled}
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {items.map((item) => (
-                <SelectItem key={item.id} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FormDescription>{description}</FormDescription>
-          <FormMessage />
-        </FormItem>
-      )}
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <Select
+              onValueChange={(value) => {
+                field.onChange(value);
+                customOnChange?.(value);
+              }}
+              disabled={disabled}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <p>
+                    {field.value?.toString() !== ''
+                      ? items.find((item) => item.value === field.value)?.label
+                      : placeholder}
+                  </p>
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {items.map((item) => (
+                  <SelectItem key={item.id} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormDescription>{description}</FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }

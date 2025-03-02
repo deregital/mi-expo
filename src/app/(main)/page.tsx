@@ -1,14 +1,17 @@
 import { InstallPWAButton } from '@/components/common/install-pwa-button';
 import { auth, signIn, signOut } from '@/server/auth';
+import { trpc } from '@/server/trpc/server';
 import Image from 'next/image';
 
 export default async function Home() {
   const session = await auth();
 
+  const me = await trpc.me.get();
+
   return (
     <div className='flex items-center justify-center flex-col h-full'>
       <h1 className='text-7xl'>Mi expo</h1>
-      <p>Hola Ricky Fort</p>
+      <p>Hola {me?.username}</p>
       <Image
         alt='Alt'
         src='https://media.ambito.com/p/fa02077a75256f92036786bea42ad093/adjuntos/239/imagenes/039/765/0039765942/ricardo-fortjpg.jpg'

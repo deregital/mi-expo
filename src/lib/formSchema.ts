@@ -18,7 +18,7 @@ export const formSchema = profileSchema
     password: true,
   })
   .extend({
-    confirmPassword: profileSchema.shape.password.optional(),
+    confirmPassword: profileSchema.shape.password,
     residence: locationSchema.pick({
       city: true,
       country: true,

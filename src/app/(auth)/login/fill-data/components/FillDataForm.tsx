@@ -3,10 +3,10 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { trpc } from '@/server/trpc/client';
-import type { MiExpoMeResponseDto } from 'expo-backend-types';
+import type { GetMiExpoMeResponseDto } from 'expo-backend-types';
 import { FormFieldRow } from '@/app/(auth)/login/fill-data/components/FormFieldRow';
 import {
   SignupFormField,
@@ -17,10 +17,10 @@ import { Button } from '@/components/ui/button';
 import { formSchema, type FormSchema } from '@/lib/formSchema';
 import { signInUsernmePassword } from '@/app/(auth)/login/fill-data/actions';
 import { redirect } from 'next/navigation';
-import { signOut } from '@/server/auth';
+import { format } from 'date-fns/format';
 
 interface FillDataFormProps {
-  data: MiExpoMeResponseDto;
+  data: GetMiExpoMeResponseDto;
 }
 
 export function FillDataForm({ data }: FillDataFormProps) {
@@ -28,10 +28,15 @@ export function FillDataForm({ data }: FillDataFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ...data,
-      birthDate: data.birthDate ? new Date(data.birthDate) : null,
+      birthDate: data.birthDate
+        ? (format(data.birthDate, 'yyyy-MM-dd') as unknown as Date)
+        : null,
+      residence: data.residenceLocation || {},
+      birth: data.birthLocation || {},
     },
     shouldUnregister: true,
     context: formSchema,
+    mode: 'onChange',
   });
   const { handleSubmit } = form;
   const birthCountry = useWatch({
@@ -51,15 +56,22 @@ export function FillDataForm({ data }: FillDataFormProps) {
     trpc.location.getCitiesByArgState.useQuery(residenceState, {
       enabled: !!residenceState,
     });
+
+  const birthCountryCode = useMemo(() => {
+    if (!birthCountry) {
+      return null;
+    }
+
+    return countriesData?.find((country) => country.name === birthCountry)
+      ?.isoCode;
+  }, [birthCountry, countriesData]);
+
   const { data: statesData, isLoading: isLoadingStates } =
-    trpc.location.getStateByCountry.useQuery(birthCountry, {
-      enabled: !!birthCountry,
+    trpc.location.getStateByCountry.useQuery(birthCountryCode ?? '', {
+      enabled: !!birthCountryCode,
     });
-  const updateProfile = trpc.profile.edit.useMutation({
+  const updateProfile = trpc.me.update.useMutation({
     onSuccess: async () => {
-      await signOut({
-        redirect: false,
-      });
       await signInUsernmePassword({
         username: form.getValues('username')!,
         password: form.getValues('password')!,
@@ -73,6 +85,12 @@ export function FillDataForm({ data }: FillDataFormProps) {
       <form
         className='space-y-2'
         onSubmit={handleSubmit(() => {
+          if (!form.formState.isValid) {
+            console.log('Invalid form');
+
+            return;
+          }
+
           const { birthDate, ...values } = form.getValues();
           let birthDateString: string | null = null;
           if (birthDate instanceof Date) {
@@ -82,10 +100,11 @@ export function FillDataForm({ data }: FillDataFormProps) {
               birthDate as unknown as string,
             ).toISOString();
           }
+
           updateProfile.mutate({
             ...values,
-            id: data.id,
             birthDate: birthDateString,
+            secondaryPhoneNumber: values.secondaryPhoneNumber || null,
           });
         })}
       >
@@ -158,17 +177,17 @@ export function FillDataForm({ data }: FillDataFormProps) {
               {
                 label: 'Masculino',
                 value: 'Masculino',
-                id: 'M',
+                id: 'Masculino',
               },
               {
                 label: 'Femenino',
                 value: 'Femenino',
-                id: 'F',
+                id: 'Femenino',
               },
               {
                 label: 'Otro',
                 value: 'Otro',
-                id: 'O',
+                id: 'Otro',
               },
             ]}
           />
@@ -190,18 +209,20 @@ export function FillDataForm({ data }: FillDataFormProps) {
             items={
               countriesData?.map((country) => ({
                 label: country.name,
-                value: country.isoCode,
+                value: country.name,
                 id: country.isoCode,
               })) || []
             }
             onChange={(value) => {
               const selectedCountry = countriesData?.find(
-                (country) => country.isoCode === value,
+                (country) => country.name === value,
               );
+
               if (!selectedCountry) {
                 return;
               }
-              form.setValue('birth.country', selectedCountry.isoCode);
+              form.setValue('birth.country', selectedCountry.name);
+              form.setValue('birth.city', '');
             }}
           />
           <SignupSelectField
@@ -255,6 +276,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
             onChange={(value) => {
               form.setValue('residence.country', 'Argentina');
               form.setValue('residence.state', value);
+              form.setValue('residence.city', '');
             }}
           />
           <SignupSelectField
@@ -292,7 +314,11 @@ export function FillDataForm({ data }: FillDataFormProps) {
         </FormFieldRow>
         <Button
           type='submit'
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          disabled={
+            form.formState.isSubmitting ||
+            !form.formState.isValid ||
+            Object.keys(form.formState.errors).length > 0
+          }
         >
           Guardar
         </Button>

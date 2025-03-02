@@ -16,6 +16,9 @@ export default async function FillDataPage() {
     redirect('/login');
   }
 
+  await trpc.location.getCountries.prefetch();
+  await trpc.location.getArgStates.prefetch();
+
   return (
     <div className='h-[80%] overflow-y-auto w-full px-2'>
       <FillDataForm data={profileData} />

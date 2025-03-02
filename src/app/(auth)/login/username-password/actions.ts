@@ -29,7 +29,6 @@ export async function authenticate(
     await signIn('usernamePassword', {
       username: validatedData.data.username,
       password: validatedData.data.password,
-      redirectTo: '/',
       redirect: false,
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
