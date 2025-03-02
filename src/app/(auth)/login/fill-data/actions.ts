@@ -1,4 +1,7 @@
+'use server';
+
 import { signIn } from '@/server/auth';
+import { redirect } from 'next/navigation';
 
 export async function signInUsernmePassword({
   username,
@@ -7,9 +10,10 @@ export async function signInUsernmePassword({
   username: string;
   password: string;
 }) {
-  await signIn('usernamePassword', {
+  await signIn('UsernamePassword', {
     username,
     password,
     redirect: false,
   });
+  redirect('/');
 }

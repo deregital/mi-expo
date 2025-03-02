@@ -3,7 +3,7 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { trpc } from '@/server/trpc/client';
 import type { GetMiExpoMeResponseDto } from 'expo-backend-types';
@@ -16,7 +16,6 @@ import { PasswordInputs } from '@/app/(auth)/login/fill-data/components/Password
 import { Button } from '@/components/ui/button';
 import { formSchema, type FormSchema } from '@/lib/formSchema';
 import { signInUsernmePassword } from '@/app/(auth)/login/fill-data/actions';
-import { redirect } from 'next/navigation';
 import { format } from 'date-fns/format';
 
 interface FillDataFormProps {
@@ -24,21 +23,39 @@ interface FillDataFormProps {
 }
 
 export function FillDataForm({ data }: FillDataFormProps) {
+  const { birthLocation: birth, residenceLocation: residence, ...rest } = data;
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...data,
-      birthDate: data.birthDate
-        ? (format(data.birthDate, 'yyyy-MM-dd') as unknown as Date)
+      ...rest,
+      secondaryPhoneNumber: rest.secondaryPhoneNumber ?? undefined,
+      birthDate: rest.birthDate
+        ? (format(rest.birthDate, 'yyyy-MM-dd') as unknown as Date)
         : null,
-      residence: data.residenceLocation || {},
-      birth: data.birthLocation || {},
+      residence: residence
+        ? {
+            city: residence.city,
+            state: residence.state,
+            country: residence.country,
+            latitude: residence.latitude,
+            longitude: residence.longitude,
+          }
+        : undefined,
+      birth: birth
+        ? {
+            city: birth.city,
+            state: birth.state,
+            country: birth.country,
+            latitude: birth.latitude,
+            longitude: birth.longitude,
+          }
+        : undefined,
     },
-    shouldUnregister: true,
     context: formSchema,
+    reValidateMode: 'onChange',
     mode: 'onChange',
   });
-  const { handleSubmit } = form;
   const birthCountry = useWatch({
     control: form.control,
     name: 'birth.country',
@@ -66,17 +83,32 @@ export function FillDataForm({ data }: FillDataFormProps) {
       ?.isoCode;
   }, [birthCountry, countriesData]);
 
+  useEffect(() => {
+    if (data.birthLocation?.latitude) {
+      form.setValue('birth.latitude', data.birthLocation.latitude);
+      form.setValue('birth.longitude', data.birthLocation.longitude);
+      form.setValue('birth.city', data.birthLocation.city);
+      form.setValue('birth.country', data.birthLocation.country);
+    }
+    if (data.residenceLocation?.latitude) {
+      form.setValue('residence.latitude', data.residenceLocation.latitude);
+      form.setValue('residence.longitude', data.residenceLocation.longitude);
+      form.setValue('residence.city', data.residenceLocation.city);
+      form.setValue('residence.state', data.residenceLocation.state);
+      form.setValue('residence.country', data.residenceLocation.country);
+    }
+  }, [data, form]);
+
   const { data: statesData, isLoading: isLoadingStates } =
     trpc.location.getStateByCountry.useQuery(birthCountryCode ?? '', {
       enabled: !!birthCountryCode,
     });
   const updateProfile = trpc.me.update.useMutation({
-    onSuccess: async () => {
+    onSettled: async () => {
       await signInUsernmePassword({
         username: form.getValues('username')!,
         password: form.getValues('password')!,
       });
-      redirect('/');
     },
   });
 
@@ -84,29 +116,34 @@ export function FillDataForm({ data }: FillDataFormProps) {
     <Form {...form}>
       <form
         className='space-y-2'
-        onSubmit={handleSubmit(() => {
-          if (!form.formState.isValid) {
-            console.log('Invalid form');
+        onSubmit={form.handleSubmit(
+          () => {
+            if (!form.formState.isValid) {
+              console.error('Form is invalid', form.formState);
+              return;
+            }
 
-            return;
-          }
+            const { birthDate, ...values } = form.getValues();
+            let birthDateString: string | null = null;
+            if (birthDate instanceof Date) {
+              birthDateString = birthDate?.toISOString() ?? null;
+            } else {
+              birthDateString = new Date(
+                birthDate as unknown as string,
+              ).toISOString();
+            }
 
-          const { birthDate, ...values } = form.getValues();
-          let birthDateString: string | null = null;
-          if (birthDate instanceof Date) {
-            birthDateString = birthDate?.toISOString() ?? null;
-          } else {
-            birthDateString = new Date(
-              birthDate as unknown as string,
-            ).toISOString();
-          }
-
-          updateProfile.mutate({
-            ...values,
-            birthDate: birthDateString,
-            secondaryPhoneNumber: values.secondaryPhoneNumber || null,
-          });
-        })}
+            updateProfile.mutate({
+              ...values,
+              birthDate: birthDateString,
+              secondaryPhoneNumber: values.secondaryPhoneNumber || null,
+            });
+          },
+          (e) => {
+            console.error('error', e);
+            console.log('submitting', form.getValues());
+          },
+        )}
       >
         <SignupFormField
           name='username'
@@ -234,7 +271,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
             items={
               statesData?.map((state) => ({
                 label: state.name,
-                value: state.isoCode,
+                value: state.name,
                 id: state.isoCode,
               })) || []
             }
@@ -252,7 +289,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
               }
               const numberLat = Number(selectedCity.latitude);
               const numberLong = Number(selectedCity.longitude);
-              form.setValue('birth.city', selectedCity.isoCode);
+              form.setValue('birth.city', selectedCity.name);
               form.setValue('birth.state', '');
               form.setValue('birth.latitude', numberLat);
               form.setValue('birth.longitude', numberLong);
@@ -316,7 +353,6 @@ export function FillDataForm({ data }: FillDataFormProps) {
           type='submit'
           disabled={
             form.formState.isSubmitting ||
-            !form.formState.isValid ||
             Object.keys(form.formState.errors).length > 0
           }
         >
