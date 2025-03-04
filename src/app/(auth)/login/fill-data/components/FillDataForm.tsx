@@ -116,34 +116,32 @@ export function FillDataForm({ data }: FillDataFormProps) {
     <Form {...form}>
       <form
         className='space-y-2'
-        onSubmit={form.handleSubmit(
-          () => {
-            if (!form.formState.isValid) {
-              console.error('Form is invalid', form.formState);
-              return;
-            }
-
-            const { birthDate, ...values } = form.getValues();
-            let birthDateString: string | null = null;
-            if (birthDate instanceof Date) {
-              birthDateString = birthDate?.toISOString() ?? null;
-            } else {
-              birthDateString = new Date(
-                birthDate as unknown as string,
-              ).toISOString();
-            }
-
-            updateProfile.mutate({
-              ...values,
-              birthDate: birthDateString,
-              secondaryPhoneNumber: values.secondaryPhoneNumber || null,
+        onSubmit={form.handleSubmit(() => {
+          const { password, confirmPassword } = form.getValues();
+          if (password !== confirmPassword) {
+            form.setError('confirmPassword', {
+              type: 'manual',
+              message: 'Las contraseñas no coinciden',
             });
-          },
-          (e) => {
-            console.error('error', e);
-            console.log('submitting', form.getValues());
-          },
-        )}
+            return;
+          }
+
+          const { birthDate, ...values } = form.getValues();
+          let birthDateString: string | null = null;
+          if (birthDate instanceof Date) {
+            birthDateString = birthDate?.toISOString() ?? null;
+          } else {
+            birthDateString = new Date(
+              birthDate as unknown as string,
+            ).toISOString();
+          }
+
+          updateProfile.mutate({
+            ...values,
+            birthDate: birthDateString,
+            secondaryPhoneNumber: values.secondaryPhoneNumber || null,
+          });
+        })}
       >
         <SignupFormField
           name='username'
@@ -277,7 +275,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
             }
             onChange={(value) => {
               const selectedCity = statesData?.find(
-                (state) => state.isoCode === value,
+                (state) => state.name === value,
               );
               if (
                 !selectedCity ||
@@ -289,6 +287,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
               }
               const numberLat = Number(selectedCity.latitude);
               const numberLong = Number(selectedCity.longitude);
+
               form.setValue('birth.city', selectedCity.name);
               form.setValue('birth.state', '');
               form.setValue('birth.latitude', numberLat);
