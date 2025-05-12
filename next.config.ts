@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       {
         hostname: 'media.ambito.com',
       },
+      {
+        hostname: 'resizer.glanacion.com',
+      },
     ],
   },
 };
