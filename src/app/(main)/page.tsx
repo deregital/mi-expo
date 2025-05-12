@@ -1,4 +1,5 @@
 import { InstallPWAButton } from '@/components/common/install-pwa-button';
+import { SimpleButton } from '@/components/common/simple-button';
 import { auth, signIn, signOut } from '@/server/auth';
 import { trpc } from '@/server/trpc/server';
 import Image from 'next/image';
@@ -36,9 +37,31 @@ export default async function Home() {
                 <ul>
                   {me?.productionRequestsSent.map((prod) => {
                     return (
-                      <li key={prod.id}>
-                        {prod.id} {prod.status} Aceptar -- Rechazar
-                      </li>
+                      prod.status === 'PENDING' && (
+                        <li key={prod.id}>
+                          {prod.id} {prod.status}
+                          <form
+                            action={async () => {
+                              'use server';
+                              await trpc.productionAfilliationRequest.reject(
+                                prod.id,
+                              );
+                            }}
+                          >
+                            <SimpleButton>Rechazar</SimpleButton>
+                          </form>
+                          <form
+                            action={async () => {
+                              'use server';
+                              await trpc.productionAfilliationRequest.accept(
+                                prod.id,
+                              );
+                            }}
+                          >
+                            <SimpleButton>Aceptar</SimpleButton>
+                          </form>
+                        </li>
+                      )
                     );
                   })}
                 </ul>
@@ -78,7 +101,18 @@ export default async function Home() {
                   return (
                     <li key={prod.id}>
                       {prod.administrator?.username} - {prod.name}
-                      {/* <SimpleButton action={() => trpc.productionAfilliationRequest.create(prod.id)} title='Enviar solicitud de afiliación' /> */}
+                      <form
+                        action={async () => {
+                          'use server';
+                          await trpc.productionAfilliationRequest.create(
+                            prod.id,
+                          );
+                        }}
+                      >
+                        <SimpleButton>
+                          Enviar solicitud de afiliación
+                        </SimpleButton>
+                      </form>
                     </li>
                   );
                 })}
