@@ -158,7 +158,7 @@ const { handlers, signIn, signOut, auth } = NextAuth({
         username: { label: 'Nombre de usuario', type: 'text' },
         password: { label: 'Contraseña', type: 'password' },
       },
-      id: 'UsernamePassword',
+      id: 'usernamePassword',
       type: 'credentials',
       async authorize(credentials) {
         try {
