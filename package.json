@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -22,7 +22,7 @@
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "expo-backend-types": "^0.34.0",
+    "expo-backend-types": "^0.53.0-EXPO-362-ExpoBackend-Agregar-campos-a-rutas-necesarias.4",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.474.0",
     "next": "15.1.4",
