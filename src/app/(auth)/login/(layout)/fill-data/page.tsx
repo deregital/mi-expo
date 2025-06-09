@@ -1,4 +1,4 @@
-import { FillDataForm } from '@/app/(auth)/login/fill-data/components/FillDataForm';
+import { FillDataForm } from '@/app/(auth)/login/(layout)/fill-data/components/FillDataForm';
 import { auth } from '@/server/auth';
 import { trpc } from '@/server/trpc/server';
 import { redirect } from 'next/navigation';

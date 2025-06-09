@@ -1,33 +1,40 @@
 'use client';
 
+import { VerifyPhoneForm } from '@/components/PhoneForm';
 import { Button } from '@/components/ui/button';
 import { redirect } from 'next/navigation';
+import { useState } from 'react';
 
 export function LoginClient() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className='flex h-full items-center gap-x-2'>
-      <Button
-        className='h-fit'
-        onClick={() => {
-          redirect('/login/username-password');
-        }}
-      >
-        Ya participaste en algún evento? <br /> Inicia sesión
-      </Button>
-      <Button
-        onClick={() => {
-          redirect('/register');
-        }}
-      >
-        Es tu primera vez? Registrate
-      </Button>
-      <Button
-        onClick={() => {
-          redirect('/login/verify-phone');
-        }}
-      >
-        Ya participé y quiero verificar mi teléfono
-      </Button>
-    </div>
+    <main className='flex flex-col items-center'>
+      <h1 className='text-5xl font-semibold'>MiExpo</h1>
+      <h3 className='text-lg'>La app para transformarte en artista</h3>
+      <div className='flex h-full flex-col items-center gap-y-2'>
+        {!isOpen ? (
+          <Button
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          >
+            Registrate
+          </Button>
+        ) : (
+          <VerifyPhoneForm />
+        )}
+        <Button
+          className='h-fit'
+          onClick={() => {
+            redirect('/login/username-password');
+          }}
+        >
+          Inicia sesión
+        </Button>
+      </div>
+
+      <div className='flex h-full items-center gap-x-2'></div>
+    </main>
   );
 }

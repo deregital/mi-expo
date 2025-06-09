@@ -7,15 +7,15 @@ import React, { useEffect, useMemo } from 'react';
 
 import { trpc } from '@/server/trpc/client';
 import type { GetMiExpoMeResponseDto } from 'expo-backend-types';
-import { FormFieldRow } from '@/app/(auth)/login/fill-data/components/FormFieldRow';
+import { FormFieldRow } from '@/app/(auth)/login/(layout)/fill-data/components/FormFieldRow';
 import {
   SignupFormField,
   SignupSelectField,
-} from '@/app/(auth)/login/fill-data/components/FormFields';
-import { PasswordInputs } from '@/app/(auth)/login/fill-data/components/PasswordInputs';
+} from '@/app/(auth)/login/(layout)/fill-data/components/FormFields';
+import { PasswordInputs } from '@/app/(auth)/login/(layout)/fill-data/components/PasswordInputs';
 import { Button } from '@/components/ui/button';
 import { formSchema, type FormSchema } from '@/lib/formSchema';
-import { signInUsernmePassword } from '@/app/(auth)/login/fill-data/actions';
+import { signInUsernmePassword } from '@/app/(auth)/login/(layout)/fill-data/actions';
 import { format } from 'date-fns/format';
 
 interface FillDataFormProps {
