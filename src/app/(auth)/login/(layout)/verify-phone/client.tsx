@@ -1,6 +1,5 @@
 'use client';
 
-import { signInPhoneNumber } from '@/app/(auth)/login/verify-phone/otp/actions';
 import { Button } from '@/components/ui/button';
 import { Form, FormField } from '@/components/ui/form';
 import {
@@ -11,8 +10,9 @@ import {
 import { trpc } from '@/server/trpc/client';
 import { type VerifyOtpDto } from 'expo-backend-types';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
-import { useRouter } from 'next/navigation';
 import { type SubmitHandler, useForm } from 'react-hook-form';
+import { successVerifyPhone } from './actions';
+import { useEffect, useRef } from 'react';
 
 interface VerifyPhoneOtpClientProps {
   phoneNumber: string;
@@ -21,16 +21,24 @@ interface VerifyPhoneOtpClientProps {
 export function VerifyPhoneOtpClient({
   phoneNumber,
 }: VerifyPhoneOtpClientProps) {
-  const router = useRouter();
   const form = useForm<Pick<VerifyOtpDto, 'code'>>();
   const verifyOtpMutation = trpc.otp.verify.useMutation({
     onSuccess: async () => {
-      await signInPhoneNumber({ phoneNumber });
-      router.push('/login/fill-data');
+      await successVerifyPhone();
     },
   });
 
   const sentOtpMutation = trpc.otp.send.useMutation();
+  const otpSentFirstTime = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (!otpSentFirstTime.current) {
+      sentOtpMutation.mutate({
+        phoneNumber: phoneNumber,
+      });
+      otpSentFirstTime.current = true;
+    }
+  });
 
   const onSubmit: SubmitHandler<Pick<VerifyOtpDto, 'code'>> = (data) => {
     verifyOtpMutation.mutate({
