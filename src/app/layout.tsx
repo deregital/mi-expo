@@ -1,17 +1,7 @@
 import type { Metadata } from 'next';
-import { DM_Sans, Geist, Geist_Mono } from 'next/font/google';
+import { DM_Sans } from 'next/font/google';
 import './globals.css';
 import { TRPCReactProvider } from '@/server/trpc/client';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 const DMSans = DM_Sans({
   subsets: ['latin'],
