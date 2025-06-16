@@ -4,10 +4,7 @@ import {
   publicProcedure,
   router,
 } from '@/server/trpc';
-import {
-  updateMiExpoMeFirstTimeSchema,
-  updateMiExpoMeSchema,
-} from 'expo-backend-types';
+import { updateMiExpoMeFirstTimeSchema } from 'expo-backend-types';
 
 export const meRouter = router({
   get: protectedProcedure.query(async ({ ctx }) => {
@@ -36,22 +33,6 @@ export const meRouter = router({
         },
         headers: {
           Authorization: `Bearer ${dataLogin.backendTokens.accessToken}`,
-        },
-      });
-      console.log('DATA:', data);
-
-      if (error) throw handleError(error);
-
-      return data;
-    }),
-  update2: protectedProcedure
-    .input(updateMiExpoMeSchema)
-    .mutation(async ({ input, ctx }) => {
-      const birthDate = input.birthDate?.toISOString();
-      const { data, error } = await ctx.fetch.PATCH(`/mi-expo/me`, {
-        body: {
-          ...input,
-          birthDate: birthDate ?? null,
         },
       });
       console.log('DATA:', data);
