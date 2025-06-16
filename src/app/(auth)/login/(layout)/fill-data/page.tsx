@@ -1,16 +1,14 @@
-import { FillDataForm } from '@/app/(auth)/login/(layout)/fill-data/components/FillDataForm';
-import { auth } from '@/server/auth';
 import { trpc } from '@/server/trpc/server';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { FillDataForm } from './components/FillDataForm';
+import { type RouterOutput } from '@/server/trpc';
 
 export default async function FillDataPage() {
-  const user = await auth();
-
-  if (!user?.user?.id) {
-    redirect('/login');
-  }
-
-  const profileData = await trpc.me.get();
+  const profileDataString = (await cookies()).get('profileData')?.value;
+  const profileData = JSON.parse(
+    profileDataString ?? '',
+  ) as RouterOutput['profile']['getByPhoneNumber'];
 
   if (!profileData) {
     redirect('/login');

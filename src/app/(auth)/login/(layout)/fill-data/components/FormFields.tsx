@@ -60,16 +60,40 @@ export function SignupFormField({
           <FormMessage />
         </FormItem>
       )}
-      rules={{
-        validate: validate
-          ? (value, formData) => {
-              return validate(value, formData);
-            }
-          : undefined,
-      }}
     />
   );
 }
+
+// <FormField
+//       control={formControl}
+//       name={name}
+//       render={({ field: { value, ...rest } }) => (
+//         <FormItem className='space-y-0'>
+//           <FormLabel>{label}</FormLabel>
+//           <FormControl>
+//             <Input
+//               placeholder={placeholder}
+//               type={inputType || 'text'}
+//               value={value?.toString() || ''}
+//               className={cn(
+//                 inputType === 'number' &&
+//                   '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+//               )}
+//               {...rest}
+//             />
+//           </FormControl>
+//           {description && <FormDescription>{description}</FormDescription>}
+//           <FormMessage />
+//         </FormItem>
+//       )}
+//       rules={{
+//         validate: validate
+//           ? (value, formData) => {
+//               return validate(value, formData);
+//             }
+//           : undefined,
+//       }}
+//     />
 
 interface SignupSelectFieldProps {
   name: FieldPath<FormSchema>;
@@ -137,4 +161,44 @@ export function SignupSelectField({
       }}
     />
   );
+}
+
+{
+  /* <FormField
+      control={formControl}
+      name={name}
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <Select
+              onValueChange={(value) => {
+                field.onChange(value);
+                customOnChange?.(value);
+              }}
+              disabled={disabled}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <p>
+                    {field.value?.toString() !== ''
+                      ? items.find((item) => item.value === field.value)?.label
+                      : placeholder}
+                  </p>
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {items.map((item) => (
+                  <SelectItem key={item.id} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormDescription>{description}</FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    /> */
 }

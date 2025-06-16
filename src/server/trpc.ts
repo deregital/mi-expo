@@ -1,8 +1,9 @@
 import { auth } from '@/server/auth';
 import { fetchClient } from '@/server/fetchClient';
-import { initTRPC, TRPCError } from '@trpc/server';
+import { type inferRouterOutputs, initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
+import { type appRouter } from './routers/app';
 
 export function handleError(error: {
   message: string[];
@@ -11,7 +12,7 @@ export function handleError(error: {
 }): TRPCError | undefined {
   const { message, statusCode, error: cause } = error;
 
-  const messageString = message[0];
+  const messageString = Array.isArray(message) ? message[0] : message;
   const errorCode = statusCode as
     | 200
     | 400
@@ -101,3 +102,5 @@ export const publicProcedure = t.procedure.use(({ ctx, next }) => {
   });
 });
 export const createCallerFactory = t.createCallerFactory;
+
+export type RouterOutput = inferRouterOutputs<typeof appRouter>;

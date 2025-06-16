@@ -17,3 +17,16 @@ export async function signInUsernmePassword({
   });
   redirect('/');
 }
+
+export async function successSubmit() {
+  redirect('/login/verify-phone');
+}
+
+export async function submitForm() {
+  try {
+    // MANDAR MUTATE updateMe
+  } catch (e) {
+    console.log(e);
+    // Devolver errores del back
+  }
+}
