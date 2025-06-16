@@ -1,12 +1,14 @@
 'use client';
 
-import { VerifyPhoneForm } from '@/components/PhoneForm';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { redirect } from 'next/navigation';
 import { useState } from 'react';
+import { checkPhoneNumber } from './action';
 
 export function LoginClient() {
   const [isOpen, setIsOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   return (
     <main className='flex flex-col items-center'>
@@ -22,8 +24,15 @@ export function LoginClient() {
             Registrate
           </Button>
         ) : (
-          <VerifyPhoneForm />
+          <>
+            <Input
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.currentTarget.value)}
+            />
+            <Button onClick={() => checkPhoneNumber(phoneNumber)}>Phone</Button>
+          </>
         )}
+
         <Button
           className='h-fit'
           onClick={() => {
