@@ -6,10 +6,12 @@ export default async function LoginLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className='h-[100dvh] w-full flex flex-col items-center justify-center'>
+    <div className='w-full flex flex-col items-center'>
       <h1 className='text-4xl font-semibold my-2'>MiExpo</h1>
       <Separator className='bg-black' />
-      {children}
+      <main className='h-full flex flex-col items-center justify-center'>
+        {children}
+      </main>
     </div>
   );
 }

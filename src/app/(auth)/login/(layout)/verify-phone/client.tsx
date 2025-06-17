@@ -12,7 +12,7 @@ import { type VerifyOtpDto } from 'expo-backend-types';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { successVerifyPhone } from './actions';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 interface VerifyPhoneOtpClientProps {
   phoneNumber: string;
@@ -29,16 +29,16 @@ export function VerifyPhoneOtpClient({
   });
 
   const sentOtpMutation = trpc.otp.send.useMutation();
-  const otpSentFirstTime = useRef<boolean>(false);
+  const [otpSentFirstTime, setOtpSentFirstTime] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!otpSentFirstTime.current) {
+    if (!otpSentFirstTime) {
       sentOtpMutation.mutate({
         phoneNumber: phoneNumber,
       });
-      otpSentFirstTime.current = true;
+      setOtpSentFirstTime(true);
     }
-  });
+  }, [otpSentFirstTime, sentOtpMutation, phoneNumber]);
 
   const onSubmit: SubmitHandler<Pick<VerifyOtpDto, 'code'>> = (data) => {
     verifyOtpMutation.mutate({
@@ -59,7 +59,7 @@ export function VerifyPhoneOtpClient({
           render={({ field }) => (
             <InputOTP
               autoFocus
-              className='w-full'
+              className='flex w-full justify-center'
               maxLength={6}
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
               {...field}
@@ -77,8 +77,10 @@ export function VerifyPhoneOtpClient({
         />
         <div className='flex gap-x-2'>
           <Button
+            variant={'link'}
             type='button'
             disabled={sentOtpMutation.isPending || verifyOtpMutation.isPending}
+            className='underline p-0 '
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -88,16 +90,18 @@ export function VerifyPhoneOtpClient({
               });
             }}
           >
-            Reenviar
-          </Button>
-          <Button
-            className='w-full mt-3'
-            disabled={verifyOtpMutation.isPending || sentOtpMutation.isPending}
-            type='submit'
-          >
-            Verificar
+            No recibí nada
           </Button>
         </div>
+        <Button
+          variant={'miExpoPrimary'}
+          size={'miExpoDefault'}
+          className='w-full mt-3'
+          disabled={verifyOtpMutation.isPending || sentOtpMutation.isPending}
+          type='submit'
+        >
+          Continuar registro
+        </Button>
         {sentOtpMutation.isSuccess && (
           <p className='mt-2 text-sm font-bold text-green-500'>
             Código enviado

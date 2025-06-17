@@ -12,8 +12,6 @@ export default async function LoginLayout({
   }
 
   return (
-    <div className='h-[100dvh] w-full flex items-center justify-center'>
-      {children}
-    </div>
+    <div className='h-[100dvh] w-full flex justify-center'>{children}</div>
   );
 }

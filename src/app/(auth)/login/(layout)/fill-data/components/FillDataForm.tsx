@@ -328,7 +328,13 @@ export function FillDataForm({ data }: FillDataFormProps) {
           inputType='password'
           formControl={form.control}
         />
-        <Button type='submit' disabled={form.formState.isSubmitting}>
+        <Button
+          className='w-full'
+          variant={'miExpoPrimary'}
+          size={'miExpoDefault'}
+          type='submit'
+          disabled={form.formState.isSubmitting}
+        >
           Registrate
         </Button>
       </form>

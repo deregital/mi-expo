@@ -11,14 +11,19 @@ export function LoginClient() {
   const [phoneNumber, setPhoneNumber] = useState('');
 
   return (
-    <main className='flex flex-col items-center'>
-      <h1 className='text-5xl font-semibold'>MiExpo</h1>
-      <h3 className='text-lg'>La app para transformarte en artista</h3>
-      <div className='flex h-full flex-col items-center gap-y-6'>
+    <main className='flex flex-col items-center justify-evenly'>
+      <div className='flex flex-col items-center'>
+        <h1 className='text-6xl font-semibold my-6'>
+          <span className='text-miExpo-purple'>M</span>i
+          <span className='text-miExpo-gray'>E</span>xpo
+        </h1>
+        <h3 className='text-lg'>La app para transformarte en artista</h3>
+      </div>
+      <div className='flex flex-col items-center gap-y-6'>
         {!isOpen ? (
           <Button
             variant={'miExpoPrimary'}
-            size={'miExpoDefault'}
+            size={'miExpoLg'}
             onClick={() => {
               setIsOpen(true);
             }}
@@ -28,12 +33,14 @@ export function LoginClient() {
         ) : (
           <>
             <Input
+              className='p-6 text-center'
               value={phoneNumber}
+              placeholder='Ingresá tu numero de teléfono'
               onChange={(e) => setPhoneNumber(e.currentTarget.value)}
             />
             <Button
               variant={'miExpoPrimary'}
-              size={'miExpoDefault'}
+              size={'miExpoLg'}
               className='bg-miExpo-dark-purple'
               onClick={() => checkPhoneNumber(phoneNumber)}
             >
@@ -44,7 +51,7 @@ export function LoginClient() {
 
         <Button
           variant={'miExpoSecundary'}
-          size={'miExpoDefault'}
+          size={'miExpoLg'}
           onClick={() => {
             redirect('/login/username-password');
           }}
@@ -52,8 +59,6 @@ export function LoginClient() {
           Iniciá sesión
         </Button>
       </div>
-
-      <div className='flex h-full items-center gap-x-2'></div>
     </main>
   );
 }

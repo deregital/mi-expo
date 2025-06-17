@@ -54,6 +54,7 @@ export default {
         miExpo: {
           purple: '#822E81',
           'dark-purple': '#40153F',
+          gray: '#A3A3A3',
         },
       },
       borderRadius: {
