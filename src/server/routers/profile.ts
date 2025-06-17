@@ -51,8 +51,6 @@ export const profileRouter = router({
         },
       );
 
-      console.log(data);
-
       if (error) throw handleError(error);
 
       return data;

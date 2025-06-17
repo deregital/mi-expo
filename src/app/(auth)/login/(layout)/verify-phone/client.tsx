@@ -24,7 +24,7 @@ export function VerifyPhoneOtpClient({
   const form = useForm<Pick<VerifyOtpDto, 'code'>>();
   const verifyOtpMutation = trpc.otp.verify.useMutation({
     onSuccess: async () => {
-      await successVerifyPhone();
+      await successVerifyPhone({ phoneNumber });
     },
   });
 

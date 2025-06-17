@@ -35,7 +35,6 @@ export const meRouter = router({
           Authorization: `Bearer ${dataLogin.backendTokens.accessToken}`,
         },
       });
-      console.log('DATA:', data);
 
       if (error) throw handleError(error);
 

@@ -7,7 +7,6 @@ export default async function LoginLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-
   if (session?.type === 'usernamePassword') {
     redirect('/');
   }

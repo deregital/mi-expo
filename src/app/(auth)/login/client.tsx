@@ -14,9 +14,11 @@ export function LoginClient() {
     <main className='flex flex-col items-center'>
       <h1 className='text-5xl font-semibold'>MiExpo</h1>
       <h3 className='text-lg'>La app para transformarte en artista</h3>
-      <div className='flex h-full flex-col items-center gap-y-2'>
+      <div className='flex h-full flex-col items-center gap-y-6'>
         {!isOpen ? (
           <Button
+            variant={'miExpoPrimary'}
+            size={'miExpoDefault'}
             onClick={() => {
               setIsOpen(true);
             }}
@@ -29,17 +31,25 @@ export function LoginClient() {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.currentTarget.value)}
             />
-            <Button onClick={() => checkPhoneNumber(phoneNumber)}>Phone</Button>
+            <Button
+              variant={'miExpoPrimary'}
+              size={'miExpoDefault'}
+              className='bg-miExpo-dark-purple'
+              onClick={() => checkPhoneNumber(phoneNumber)}
+            >
+              Continuar registro
+            </Button>
           </>
         )}
 
         <Button
-          className='h-fit'
+          variant={'miExpoSecundary'}
+          size={'miExpoDefault'}
           onClick={() => {
             redirect('/login/username-password');
           }}
         >
-          Inicia sesión
+          Iniciá sesión
         </Button>
       </div>
 
