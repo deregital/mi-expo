@@ -2,13 +2,16 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { redirect } from 'next/navigation';
 import { useState } from 'react';
 import { checkPhoneNumber } from './action';
+import { useRouter } from 'next/navigation';
 
 export function LoginClient() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [error, setError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <main className='flex flex-col items-center justify-evenly'>
@@ -19,6 +22,7 @@ export function LoginClient() {
         </h1>
         <h3 className='text-lg'>La app para transformarte en artista</h3>
       </div>
+
       <div className='flex flex-col items-center gap-y-6'>
         {!isOpen ? (
           <Button
@@ -32,28 +36,40 @@ export function LoginClient() {
           </Button>
         ) : (
           <>
-            <Input
-              className='p-6 text-center'
-              value={phoneNumber}
-              placeholder='Ingresá tu numero de teléfono'
-              onChange={(e) => setPhoneNumber(e.currentTarget.value)}
-            />
-            <Button
-              variant={'miExpoPrimary'}
-              size={'miExpoLg'}
-              className='bg-miExpo-dark-purple'
-              onClick={() => checkPhoneNumber(phoneNumber)}
-            >
-              Continuar registro
-            </Button>
+            {error.length !== 0 && (
+              <p className='text-red-600 font-bold'>{error}</p>
+            )}
+            <div className='flex flex-col items-center gap-y-6'>
+              <Input
+                className='p-6 text-center'
+                value={phoneNumber}
+                placeholder='Ingresá tu numero de teléfono'
+                onChange={(e) => setPhoneNumber(e.currentTarget.value)}
+              />
+              <Button
+                variant={'miExpoPrimary'}
+                size={'miExpoLg'}
+                className='bg-miExpo-dark-purple hover:bg-miExpo-purple'
+                disabled={isSubmitting}
+                onClick={async () => {
+                  setIsSubmitting(true);
+                  const result = await checkPhoneNumber(phoneNumber);
+                  if (result?.errors) {
+                    setError(result.errors?.[0]);
+                  }
+                  setIsSubmitting(false);
+                }}
+              >
+                Continuar registro
+              </Button>
+            </div>
           </>
         )}
-
         <Button
           variant={'miExpoSecundary'}
           size={'miExpoLg'}
           onClick={() => {
-            redirect('/login/username-password');
+            router.push('/login/username-password');
           }}
         >
           Iniciá sesión
