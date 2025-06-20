@@ -9,7 +9,7 @@ export default async function LoginLayout({
     <div className='w-full flex flex-col items-center'>
       <h1 className='text-4xl font-semibold my-2'>MiExpo</h1>
       <Separator className='bg-black' />
-      <main className='h-full flex flex-col items-center justify-center'>
+      <main className='h-full w-full flex flex-col items-center justify-center'>
         {children}
       </main>
     </div>

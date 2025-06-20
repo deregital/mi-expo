@@ -32,7 +32,7 @@ export async function chooseRole(
   console.log({ role, rawData });
 
   if (role === 'participant') {
-    redirect('/login/questions?role=participant');
+    redirect('/login/questions/participant');
   } else if (role === 'producer') {
     const validatedData = createProductionSchema.safeParse(rawData);
     console.log(validatedData);
@@ -49,7 +49,7 @@ export async function chooseRole(
     }
 
     await trpc.production.create(validatedData.data);
-    redirect('/login/questions/?role=producer');
+    redirect('/login/questions/producer');
   }
 
   return { role, ...rawData };

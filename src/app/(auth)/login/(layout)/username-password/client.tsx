@@ -1,13 +1,12 @@
 'use client';
 
 import { authenticate } from '@/app/(auth)/login/(layout)/username-password/actions';
+import { GoBack } from '@/components/go-back';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { type ActionResponse } from '@/lib/action-type';
 import { type LoginDto } from 'expo-backend-types';
-import { ArrowLeft } from 'lucide-react';
-import { redirect } from 'next/navigation';
 import { useActionState } from 'react';
 
 const initialState: ActionResponse<LoginDto> = {
@@ -19,17 +18,7 @@ export function LoginUsernamePasswordClient() {
 
   return (
     <div className='w-full h-full bg-white flex items-center justify-center flex-col'>
-      <div className='flex flex-row items-center'>
-        <Button
-          variant={'outline'}
-          onClick={() => {
-            redirect('/login');
-          }}
-        >
-          <ArrowLeft />
-        </Button>
-        Iniciar sesión
-      </div>
+      <GoBack text='Iniciar sesión' />
       <div className='overflow-hidden w-full h-full flex items-center justify-center flex-col px-16'>
         <div className='py-2 border rounded-t-[10px] px-3 text-center self-start border-b-0'>
           <p className='text-sm text-center font-medium'>Completá tus datos</p>
@@ -54,7 +43,12 @@ export function LoginUsernamePasswordClient() {
               placeholder='Ingresá tu contraseña'
               defaultValue={state.inputs?.password}
             />
-            <Button type='submit' disabled={isPending}>
+            <Button
+              variant={'miExpoPrimary'}
+              size={'miExpoDefault'}
+              type='submit'
+              disabled={isPending}
+            >
               Iniciar sesión
             </Button>
           </form>

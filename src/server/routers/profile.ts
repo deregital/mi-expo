@@ -52,7 +52,7 @@ export const profileRouter = router({
       );
 
       if (error) throw handleError(error);
-
+      console.log(data);
       return data;
     }),
 });

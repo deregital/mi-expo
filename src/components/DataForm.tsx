@@ -14,7 +14,6 @@ import {
 import { PasswordInputs } from '@/app/(auth)/login/(layout)/fill-data/components/PasswordInputs';
 import { Button } from '@/components/ui/button';
 import { formSchema, type FormSchema } from '@/lib/formSchema';
-import { signInUsernmePassword } from '@/app/(auth)/login/(layout)/fill-data/actions';
 import { format } from 'date-fns/format';
 import { type GetMiExpoMeResponseDto } from 'expo-backend-types';
 
@@ -103,14 +102,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
     trpc.location.getStateByCountry.useQuery(birthCountryCode ?? '', {
       enabled: !!birthCountryCode,
     });
-  const updateProfile = trpc.me.update.useMutation({
-    onSettled: async () => {
-      await signInUsernmePassword({
-        username: form.getValues('username')!,
-        password: form.getValues('password')!,
-      });
-    },
-  });
+  const updateProfile = trpc.me.update.useMutation();
 
   return (
     <Form {...form}>
