@@ -29,13 +29,10 @@ export async function chooseRole(
     description: formData.get('productionDescription') as string,
   };
 
-  console.log({ role, rawData });
-
   if (role === 'participant') {
     redirect('/login/questions/participant');
   } else if (role === 'producer') {
     const validatedData = createProductionSchema.safeParse(rawData);
-    console.log(validatedData);
 
     if (!validatedData.success) {
       return {
