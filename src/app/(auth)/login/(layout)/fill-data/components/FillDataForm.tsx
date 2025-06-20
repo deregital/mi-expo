@@ -99,14 +99,14 @@ export function FillDataForm({ data }: FillDataFormProps) {
     });
   const onSubmit: SubmitHandler<FormSchema> = async (data) => {
     try {
-      // const { password, confirmPassword } = form.getValues();
-      // if (password !== confirmPassword) {
-      //   form.setError('confirmPassword', {
-      //     type: 'manual',
-      //     message: 'Las contraseñas no coinciden',
-      //   });
-      //   return;
-      // }
+      const { password, confirmPassword } = form.getValues();
+      if (password !== confirmPassword) {
+        form.setError('confirmPassword', {
+          type: 'manual',
+          message: 'Las contraseñas no coinciden',
+        });
+        return;
+      }
 
       const { birthDate, ...values } = form.getValues();
       let birthDateString: string | null = null;
@@ -328,8 +328,15 @@ export function FillDataForm({ data }: FillDataFormProps) {
           inputType='password'
           formControl={form.control}
         />
+        <SignupFormField
+          name='confirmPassword'
+          label='Confirmar contraseña'
+          placeholder='Confirmar contraseña'
+          inputType='password'
+          formControl={form.control}
+        />
         <Button
-          className='w-full'
+          className='w-full my-4'
           variant={'miExpoPrimary'}
           size={'miExpoDefault'}
           type='submit'
