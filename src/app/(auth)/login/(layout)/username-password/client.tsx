@@ -1,17 +1,16 @@
 'use client';
 
-import { authenticate } from '@/app/(auth)/login/(layout)/username-password/actions';
+import {
+  authenticate,
+  type LoginActionState,
+} from '@/app/(auth)/login/(layout)/username-password/actions';
 import { GoBack } from '@/components/go-back';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { type ActionResponse } from '@/lib/action-type';
-import { type LoginDto } from 'expo-backend-types';
 import { useActionState } from 'react';
 
-const initialState: ActionResponse<LoginDto> = {
-  success: false,
-};
+const initialState: LoginActionState = {};
 
 export function LoginUsernamePasswordClient() {
   const [state, action, isPending] = useActionState(authenticate, initialState);
@@ -35,8 +34,13 @@ export function LoginUsernamePasswordClient() {
                 name='username'
                 id='username'
                 placeholder='Ingresá tu nombre de usuario'
-                defaultValue={state.inputs?.username}
+                defaultValue={state.username}
               />
+              {state.errors?.username && (
+                <p className='mt-2 text-sm font-bold text-red-500'>
+                  {state.errors?.username}
+                </p>
+              )}
             </div>
             <div className='flex flex-col gap-2'>
               <Label className='font-medium' htmlFor='password'>
@@ -48,10 +52,19 @@ export function LoginUsernamePasswordClient() {
                 name='password'
                 id='password'
                 placeholder='Ingresá tu contraseña'
-                defaultValue={state.inputs?.password}
               />
+              {state.errors?.password && (
+                <p className='mt-2 text-sm font-bold text-red-500'>
+                  {state.errors?.password}
+                </p>
+              )}
             </div>
 
+            {state.errors?.general && (
+              <p className='mt-2 text-sm font-bold text-red-500'>
+                {state.errors.general}
+              </p>
+            )}
             <Button
               className='mt-6'
               variant={'miExpoPrimary'}
@@ -62,11 +75,6 @@ export function LoginUsernamePasswordClient() {
               Iniciar sesión
             </Button>
           </form>
-          {state.errors && (
-            <p className='mt-2 text-sm font-bold text-red-500'>
-              {Array.isArray(state.errors) ? state.errors[0] : state.errors}
-            </p>
-          )}
         </fieldset>
       </div>
     </>
