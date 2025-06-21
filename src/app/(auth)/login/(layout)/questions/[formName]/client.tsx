@@ -34,7 +34,6 @@ export default function DynamicForm({ name }: { name: string }) {
           answers: [],
         }),
       );
-      console.log('INITFORM', initForm);
       setFormState(initForm);
     }
   }, [form]);
@@ -95,25 +94,28 @@ export default function DynamicForm({ name }: { name: string }) {
         {form?.questions.map((question, index) => {
           return (
             <div key={index} className='space-y-0 my-4'>
-              <Label variant={'miExpoCard'}>{question.text}</Label>
-              {question.options.map((option, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={clsx(
-                      'px-4 py-2 border-x-[1px] border-miExpo-gray flex items-center gap-2 ',
-                      {
-                        'rounded-tr-lg border-[1px] border-b-0 pt-4':
-                          index === 0,
-                        'rounded-b-lg border-b-[1px] pb-4':
-                          index === question.options.length - 1,
-                      },
-                    )}
-                  >
-                    {question.multipleChoice ? (
+              <Label variant={'miExpoCard'}>
+                {question.text} {question.id}
+              </Label>
+              {question.multipleChoice ? (
+                question.options.map((option, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className={clsx(
+                        'px-4 py-2 border-x-[1px] border-miExpo-gray flex items-center gap-2 ',
+                        {
+                          'rounded-tr-lg border-[1px] border-b-0 pt-4':
+                            index === 0,
+                          'rounded-b-lg border-b-[1px] pb-4':
+                            index === question.options.length - 1,
+                        },
+                      )}
+                    >
                       <Checkbox
-                        name={question.id}
-                        onChange={() =>
+                        className='transition-colors'
+                        name={option.id}
+                        onClick={() =>
                           handleChange({
                             questionId: question.id,
                             optionId: option.id,
@@ -121,11 +123,32 @@ export default function DynamicForm({ name }: { name: string }) {
                           })
                         }
                       />
-                    ) : (
-                      <RadioGroup>
+
+                      <label htmlFor={option.id}>
+                        {option.text} {option.id}
+                      </label>
+                    </div>
+                  );
+                })
+              ) : (
+                <RadioGroup>
+                  {question.options.map((option, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className={clsx(
+                          'px-4 py-2 border-x-[1px] border-miExpo-gray flex items-center gap-2',
+                          {
+                            'rounded-tr-lg border-[1px] border-b-0 pt-4':
+                              index === 0,
+                            'rounded-b-lg border-b-[1px] pb-4':
+                              index === question.options.length - 1,
+                          },
+                        )}
+                      >
                         <RadioGroupItem
-                          value={question.id}
-                          onChange={() =>
+                          value={option.id}
+                          onClick={() =>
                             handleChange({
                               questionId: question.id,
                               optionId: option.id,
@@ -133,23 +156,13 @@ export default function DynamicForm({ name }: { name: string }) {
                             })
                           }
                         />
-                      </RadioGroup>
-                    )}
-                    {/* <input
-                      type={question.multipleChoice ? 'checkbox' : 'radio'}
-                      name={question.id}
-                      onChange={() =>
-                        handleChange({
-                          questionId: question.id,
-                          optionId: option.id,
-                          multipleChoice: question.multipleChoice,
-                        })
-                      }
-                    /> */}
-                    <label htmlFor={question.id}>{option.text}</label>
-                  </div>
-                );
-              })}
+
+                        <label htmlFor={option.id}>{option.text}</label>
+                      </div>
+                    );
+                  })}
+                </RadioGroup>
+              )}
             </div>
           );
         })}
@@ -165,3 +178,15 @@ export default function DynamicForm({ name }: { name: string }) {
     </>
   );
 }
+
+/* <input
+                      type={question.multipleChoice ? 'checkbox' : 'radio'}
+                      name={question.id}
+                      onChange={() =>
+                        handleChange({
+                          questionId: question.id,
+                          optionId: option.id,
+                          multipleChoice: question.multipleChoice,
+                        })
+                      }
+                    /> */
