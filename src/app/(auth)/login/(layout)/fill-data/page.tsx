@@ -7,6 +7,11 @@ import { GoBack } from '@/components/go-back';
 
 export default async function FillDataPage() {
   const profileDataString = (await cookies()).get('profileData')?.value;
+
+  if (!profileDataString) {
+    redirect('/login');
+  }
+
   const profileData = JSON.parse(
     profileDataString ?? '',
   ) as RouterOutput['profile']['getByPhoneNumber'];
