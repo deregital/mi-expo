@@ -17,7 +17,7 @@ export function GoBack({ text }: { text: string }) {
       >
         <ArrowLeft />
       </Button>
-      <p className='w-full'>{text}</p>
+      <p className='w-full font-medium'>{text}</p>
     </div>
   );
 }

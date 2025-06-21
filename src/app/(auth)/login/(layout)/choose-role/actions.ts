@@ -8,12 +8,13 @@ import { redirect } from 'next/navigation';
 
 export type ChooseRoleActionState = {
   role?: string;
-  productionName?: string;
-  productionDescription?: string;
+  name?: string;
+  description?: string;
   errors?: {
     role?: string[];
-    productionName?: string[];
-    productionDescription?: string[];
+    name?: string[];
+    description?: string[];
+    general?: string;
   };
 };
 
@@ -23,10 +24,21 @@ export async function chooseRole(
 ): Promise<ChooseRoleActionState> {
   const me = await trpc.me.get();
   const role = formData.get('role') as string;
+
+  if (!me) {
+    return {
+      ...prevState,
+      errors: {
+        general:
+          'No se pudo encontrar el perfil, vuelva la verificar el telefono',
+      },
+    };
+  }
+
   const rawData: CreateProductionDto = {
     administratorId: me?.id ?? '',
-    name: formData.get('productionName') as string,
-    description: formData.get('productionDescription') as string,
+    name: formData.get('name') as string,
+    description: formData.get('description') as string,
   };
 
   if (role === 'participant') {
@@ -34,13 +46,13 @@ export async function chooseRole(
   } else if (role === 'producer') {
     const validatedData = createProductionSchema.safeParse(rawData);
 
+    console.log(validatedData);
     if (!validatedData.success) {
       return {
         ...rawData,
         errors: {
-          productionName: validatedData.error.flatten().fieldErrors.name,
-          productionDescription:
-            validatedData.error.flatten().fieldErrors.description,
+          name: validatedData.error.flatten().fieldErrors.name,
+          description: validatedData.error.flatten().fieldErrors.description,
         },
       };
     }

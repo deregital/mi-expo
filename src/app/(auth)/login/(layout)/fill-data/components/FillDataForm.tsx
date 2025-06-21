@@ -131,7 +131,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
 
   return (
     <Form {...form}>
-      <form className='w-full' onSubmit={form.handleSubmit(onSubmit)}>
+      <form className='w-full space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
         {/* <input {...form.register('fullName')} type='text' /> */}
         <SignupFormField
           name='fullName'
@@ -336,7 +336,7 @@ export function FillDataForm({ data }: FillDataFormProps) {
           formControl={form.control}
         />
         <Button
-          className='w-full my-4'
+          className='w-full my-8'
           variant={'miExpoPrimary'}
           size={'miExpoDefault'}
           type='submit'

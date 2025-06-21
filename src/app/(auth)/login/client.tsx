@@ -36,16 +36,18 @@ export function LoginClient() {
           </Button>
         ) : (
           <>
-            {error.length !== 0 && (
-              <p className='text-red-600 font-bold'>{error}</p>
-            )}
             <div className='flex flex-col items-center gap-y-6'>
-              <Input
-                className='p-6 text-center'
-                value={phoneNumber}
-                placeholder='Ingresá tu numero de teléfono'
-                onChange={(e) => setPhoneNumber(e.currentTarget.value)}
-              />
+              <div className='flex flex-col items-center gap-2'>
+                <Input
+                  className='py-3 text-center w-72'
+                  value={phoneNumber}
+                  placeholder='Ingresá tu numero de teléfono'
+                  onChange={(e) => setPhoneNumber(e.currentTarget.value)}
+                />
+                {error.length !== 0 && (
+                  <p className='text-red-600 font-bold'>{error}</p>
+                )}
+              </div>
               <Button
                 variant={'miExpoPrimary'}
                 size={'miExpoLg'}

@@ -6,6 +6,11 @@ import { trpc } from '@/server/trpc/client';
 import { type SubmitDynamicFormsDto } from 'expo-backend-types';
 import { useEffect, useState } from 'react';
 import { successSubmitDynamicForm } from './action';
+import { Label } from '@/components/ui/label';
+import clsx from 'clsx';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup } from '@radix-ui/react-radio-group';
+import { RadioGroupItem } from '@/components/ui/radio-group';
 export default function DynamicForm({ name }: { name: string }) {
   const role =
     name === 'participant'
@@ -89,15 +94,24 @@ export default function DynamicForm({ name }: { name: string }) {
       <form className='h-full' onSubmit={handleSubmit}>
         {form?.questions.map((question, index) => {
           return (
-            <div key={index}>
-              <p>{question.text}</p>
-              <div className='flex flex-col ml-2'>
-                {question.options.map((option, index) => {
-                  return (
-                    // <p key={index}>{option.text}</p>
-                    <label key={index}>
-                      <input
-                        type={question.multipleChoice ? 'checkbox' : 'radio'}
+            <div key={index} className='space-y-0 my-4'>
+              <Label variant={'miExpoCard'}>{question.text}</Label>
+              {question.options.map((option, index) => {
+                return (
+                  <div
+                    key={index}
+                    className={clsx(
+                      'px-4 py-2 border-x-[1px] border-miExpo-gray flex items-center gap-2 ',
+                      {
+                        'rounded-tr-lg border-[1px] border-b-0 pt-4':
+                          index === 0,
+                        'rounded-b-lg border-b-[1px] pb-4':
+                          index === question.options.length - 1,
+                      },
+                    )}
+                  >
+                    {question.multipleChoice ? (
+                      <Checkbox
                         name={question.id}
                         onChange={() =>
                           handleChange({
@@ -107,15 +121,40 @@ export default function DynamicForm({ name }: { name: string }) {
                           })
                         }
                       />
-                      {option.text} - {option.id.slice(0, 6)}
-                    </label>
-                  );
-                })}
-              </div>
+                    ) : (
+                      <RadioGroup>
+                        <RadioGroupItem
+                          value={question.id}
+                          onChange={() =>
+                            handleChange({
+                              questionId: question.id,
+                              optionId: option.id,
+                              multipleChoice: question.multipleChoice,
+                            })
+                          }
+                        />
+                      </RadioGroup>
+                    )}
+                    {/* <input
+                      type={question.multipleChoice ? 'checkbox' : 'radio'}
+                      name={question.id}
+                      onChange={() =>
+                        handleChange({
+                          questionId: question.id,
+                          optionId: option.id,
+                          multipleChoice: question.multipleChoice,
+                        })
+                      }
+                    /> */}
+                    <label htmlFor={question.id}>{option.text}</label>
+                  </div>
+                );
+              })}
             </div>
           );
         })}
         <Button
+          className='mt-6'
           disabled={isLoading}
           variant={'miExpoPrimary'}
           size={'miExpoDefault'}
