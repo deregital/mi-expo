@@ -16,6 +16,7 @@ import { GoBack } from '@/components/go-back';
 import { TRPCClientError } from '@trpc/client';
 import { successVerifyPhone } from './actions';
 import { Label } from '@/components/ui/label';
+import Image from 'next/image';
 
 interface VerifyPhoneOtpClientProps {
   phoneNumber: string;
@@ -69,7 +70,7 @@ export function VerifyPhoneOtpClient({
       <GoBack
         text={`Revisá el código que te enviamos a tu número de teléfono terminado en *${phoneNumber.slice(-4)}`}
       />
-      <div className='flex flex-col items-center justify-center h-full'>
+      <div className='flex items-center gap-16 justify-center h-full'>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -136,6 +137,13 @@ export function VerifyPhoneOtpClient({
             </Button>
           </form>
         </Form>
+        <Image
+          className='hidden lg:block'
+          alt=''
+          src='/login/verify-phone.png'
+          width={500}
+          height={500}
+        />
       </div>
     </>
   );

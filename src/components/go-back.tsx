@@ -4,7 +4,13 @@ import { Button } from './ui/button';
 import {} from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-export function GoBack({ text }: { text: string }) {
+export function GoBack({
+  text,
+  redirect,
+}: {
+  text: string;
+  redirect?: string;
+}) {
   const router = useRouter();
 
   return (
@@ -13,7 +19,13 @@ export function GoBack({ text }: { text: string }) {
         size={'icon'}
         variant={'outline'}
         className='bg-white border-[1px] border-black p-4'
-        onClick={() => router.back()}
+        onClick={() => {
+          if (redirect) {
+            router.replace(redirect);
+          } else {
+            router.back();
+          }
+        }}
       >
         <ArrowLeft />
       </Button>

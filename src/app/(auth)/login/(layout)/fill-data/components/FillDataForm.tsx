@@ -131,7 +131,10 @@ export function FillDataForm({ data }: FillDataFormProps) {
 
   return (
     <Form {...form}>
-      <form className='w-full space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className='w-full lg:w-1/2 space-y-8'
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         {/* <input {...form.register('fullName')} type='text' /> */}
         <SignupFormField
           name='fullName'

@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup } from '@radix-ui/react-radio-group';
 import { RadioGroupItem } from '@/components/ui/radio-group';
+import Image from 'next/image';
 export default function DynamicForm({ name }: { name: string }) {
   const role =
     name === 'participant'
@@ -85,58 +86,25 @@ export default function DynamicForm({ name }: { name: string }) {
   };
 
   return isLoading || !formState ? (
-    <p>Cargando...</p>
+    <></>
   ) : (
     <>
       <GoBack text={`Completá tus datos para ser ${role}`} />
-      <form className='h-full' onSubmit={handleSubmit}>
-        {form?.questions.map((question, index) => {
-          return (
-            <div key={index} className='space-y-0 my-4'>
-              <Label variant={'miExpoCard'}>
-                {question.text} {question.id}
-              </Label>
-              {question.multipleChoice ? (
-                question.options.map((option, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className={clsx(
-                        'px-4 py-2 border-x-[1px] border-miExpo-gray flex items-center gap-2 ',
-                        {
-                          'rounded-tr-lg border-[1px] border-b-0 pt-4':
-                            index === 0,
-                          'rounded-b-lg border-b-[1px] pb-4':
-                            index === question.options.length - 1,
-                        },
-                      )}
-                    >
-                      <Checkbox
-                        className='transition-colors'
-                        name={option.id}
-                        onClick={() =>
-                          handleChange({
-                            questionId: question.id,
-                            optionId: option.id,
-                            multipleChoice: question.multipleChoice,
-                          })
-                        }
-                      />
+      <div className='w-full h-full flex gap-32 items-center justify-center'>
+        <form className='w-full h-full max-w-md' onSubmit={handleSubmit}>
+          {form?.questions.map((question, index) => {
+            if (question.disabled) return;
 
-                      <label htmlFor={option.id}>
-                        {option.text} {option.id}
-                      </label>
-                    </div>
-                  );
-                })
-              ) : (
-                <RadioGroup>
-                  {question.options.map((option, index) => {
+            return (
+              <div key={index} className='space-y-0 my-4'>
+                <Label variant={'miExpoCard'}>{question.text}</Label>
+                {question.multipleChoice ? (
+                  question.options.map((option, index) => {
                     return (
                       <div
                         key={index}
                         className={clsx(
-                          'px-4 py-2 border-x-[1px] border-miExpo-gray flex items-center gap-2',
+                          'px-4 py-2 border-x-[1px] border-miExpo-gray flex items-center gap-2 ',
                           {
                             'rounded-tr-lg border-[1px] border-b-0 pt-4':
                               index === 0,
@@ -145,8 +113,9 @@ export default function DynamicForm({ name }: { name: string }) {
                           },
                         )}
                       >
-                        <RadioGroupItem
-                          value={option.id}
+                        <Checkbox
+                          className='transition-colors'
+                          name={option.id}
                           onClick={() =>
                             handleChange({
                               questionId: question.id,
@@ -159,33 +128,64 @@ export default function DynamicForm({ name }: { name: string }) {
                         <label htmlFor={option.id}>{option.text}</label>
                       </div>
                     );
-                  })}
-                </RadioGroup>
-              )}
-            </div>
-          );
-        })}
-        <Button
-          className='mt-6'
-          disabled={isLoading}
-          variant={'miExpoPrimary'}
-          size={'miExpoDefault'}
-        >
-          Registrarse en MiExpo
-        </Button>
-      </form>
+                  })
+                ) : (
+                  <RadioGroup>
+                    {question.options.map((option, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className={clsx(
+                            'px-4 py-2 border-x-[1px] border-miExpo-gray flex items-center gap-2',
+                            {
+                              'rounded-tr-lg border-[1px] border-b-0 pt-4':
+                                index === 0,
+                              'rounded-b-lg border-b-[1px] pb-4':
+                                index === question.options.length - 1,
+                            },
+                          )}
+                        >
+                          <RadioGroupItem
+                            value={option.id}
+                            onClick={() =>
+                              handleChange({
+                                questionId: question.id,
+                                optionId: option.id,
+                                multipleChoice: question.multipleChoice,
+                              })
+                            }
+                          />
+
+                          <label htmlFor={option.id}>{option.text}</label>
+                        </div>
+                      );
+                    })}
+                  </RadioGroup>
+                )}
+              </div>
+            );
+          })}
+          <Button
+            className='w-full mt-6'
+            disabled={isLoading}
+            variant={'miExpoPrimary'}
+            size={'miExpoDefault'}
+          >
+            Registrarse en MiExpo
+          </Button>
+        </form>
+        <Image
+          className='hidden lg:block'
+          alt=''
+          src={
+            name === 'producer'
+              ? '/login/form-dynamic-producer.png'
+              : '/login/form-dynamic-participant.png'
+          }
+          width={500}
+          height={500}
+        />
+      </div>
     </>
   );
 }
-
-/* <input
-                      type={question.multipleChoice ? 'checkbox' : 'radio'}
-                      name={question.id}
-                      onChange={() =>
-                        handleChange({
-                          questionId: question.id,
-                          optionId: option.id,
-                          multipleChoice: question.multipleChoice,
-                        })
-                      }
-                    /> */
