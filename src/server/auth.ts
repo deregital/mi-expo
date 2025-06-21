@@ -95,6 +95,7 @@ const { handlers, signIn, signOut, auth } = NextAuth({
                   phoneNumber: token.phoneNumber,
                 }
               : undefined,
+        type: token.type,
       };
     },
 
