@@ -58,7 +58,6 @@ export function VerifyPhoneOtpClient({
       });
     } catch (error) {
       if (error instanceof TRPCClientError) {
-        console.log(error);
         setError(error.message);
       }
       setError((error as Error).message);

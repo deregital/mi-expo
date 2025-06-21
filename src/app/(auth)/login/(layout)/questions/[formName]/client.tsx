@@ -79,7 +79,6 @@ export default function DynamicForm({ name }: { name: string }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(formState);
     if (form && formState) {
       mutateAsync({ param: form.id, input: formState });
     }

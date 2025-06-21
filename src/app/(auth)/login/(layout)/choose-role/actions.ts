@@ -46,7 +46,6 @@ export async function chooseRole(
   } else if (role === 'producer') {
     const validatedData = createProductionSchema.safeParse(rawData);
 
-    console.log(validatedData);
     if (!validatedData.success) {
       return {
         ...rawData,
