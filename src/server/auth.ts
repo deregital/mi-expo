@@ -85,7 +85,7 @@ const { handlers, signIn, signOut, auth } = NextAuth({
           token.type === 'usernamePassword'
             ? {
                 ...session.user,
-                id: token.sub!,
+                id: token.sub,
                 username: token.username,
                 role: token.role,
               }
@@ -95,6 +95,7 @@ const { handlers, signIn, signOut, auth } = NextAuth({
                   phoneNumber: token.phoneNumber,
                 }
               : undefined,
+        type: token.type,
       };
     },
 

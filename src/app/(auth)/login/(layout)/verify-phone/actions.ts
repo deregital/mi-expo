@@ -1,8 +1,9 @@
 'use server';
 
+import { redirect } from 'next/navigation';
 import { signIn } from '@/server/auth';
 
-export async function signInPhoneNumber({
+export async function successVerifyPhone({
   phoneNumber,
 }: {
   phoneNumber: string;
@@ -11,4 +12,5 @@ export async function signInPhoneNumber({
     phoneNumber,
     redirect: false,
   });
+  redirect('/login/choose-role');
 }

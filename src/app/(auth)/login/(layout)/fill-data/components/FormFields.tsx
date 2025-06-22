@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { type Control, type FieldPath } from 'react-hook-form';
+import { Label } from '@/components/ui/label';
 
 interface SignupFormFieldProps {
   name: FieldPath<FormSchema>;
@@ -43,9 +44,12 @@ export function SignupFormField({
       name={name}
       render={({ field: { value, ...rest } }) => (
         <FormItem className='space-y-0'>
-          <FormLabel>{label}</FormLabel>
+          <Label variant={'miExpoCard'}>
+            <FormLabel>{label}</FormLabel>
+          </Label>
           <FormControl>
             <Input
+              variant={'MiExpoCard'}
               placeholder={placeholder}
               type={inputType || 'text'}
               value={value?.toString() || ''}
@@ -60,13 +64,6 @@ export function SignupFormField({
           <FormMessage />
         </FormItem>
       )}
-      rules={{
-        validate: validate
-          ? (value, formData) => {
-              return validate(value, formData);
-            }
-          : undefined,
-      }}
     />
   );
 }
@@ -104,8 +101,10 @@ export function SignupSelectField({
       name={name}
       render={({ field }) => {
         return (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
+          <FormItem className='space-y-0'>
+            <Label variant={'miExpoCard'}>
+              <FormLabel>{label}</FormLabel>
+            </Label>
             <Select
               onValueChange={(value) => {
                 field.onChange(value);
@@ -114,7 +113,7 @@ export function SignupSelectField({
               disabled={disabled}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className='border-[1px] rounded-lg rounded-tl-none border-miExpo-gray px-4 py-5'>
                   <p>
                     {field.value?.toString() !== ''
                       ? items.find((item) => item.value === field.value)?.label

@@ -1,14 +1,23 @@
 'use server';
 
-import { type ActionResponse } from '@/lib/action-type';
 import { signIn } from '@/server/auth';
 import { loginSchema, type LoginDto } from 'expo-backend-types';
 import { redirect } from 'next/navigation';
 
+export type LoginActionState = {
+  username?: string;
+  password?: string;
+  errors?: {
+    username?: string[];
+    password?: string[];
+    general?: string;
+  };
+};
+
 export async function authenticate(
-  prevState: ActionResponse<LoginDto> | null,
+  prevState: LoginActionState,
   formData: FormData,
-): Promise<ActionResponse<LoginDto>> {
+): Promise<LoginActionState> {
   const rawData: LoginDto = {
     username: formData.get('username') as string,
     password: formData.get('password') as string,
@@ -18,11 +27,11 @@ export async function authenticate(
 
     if (!validatedData.success) {
       return {
-        success: false,
-        errors: Object.values(validatedData.error.flatten().fieldErrors).map(
-          (error) => error[0],
-        ),
-        inputs: rawData,
+        ...rawData,
+        errors: {
+          username: validatedData.error.flatten().fieldErrors.username,
+          password: validatedData.error.flatten().fieldErrors.password,
+        },
       };
     }
 
@@ -34,9 +43,9 @@ export async function authenticate(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     return {
-      success: false,
-      errors: err.message,
-      inputs: rawData,
+      errors: {
+        general: err.message,
+      },
     };
   }
 

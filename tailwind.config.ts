@@ -51,6 +51,16 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        miExpo: {
+          purple: '#822E81',
+          'dark-purple': '#40153F',
+          cranberry: '#822E49',
+          'dark-cranberry': '#551E2F',
+          grape: '#572E82',
+          'dark-grape': '#3F215E',
+          gray: '#A3A3A3',
+          'white-gray': '#E5E5E5',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
