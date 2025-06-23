@@ -74,7 +74,6 @@ export function VerifyPhoneOtpClient({
       const interval = setInterval(() => {
         setCooldown((prev) => prev - 1);
       }, 1000);
-      console.log(cooldown);
       return () => clearInterval(interval);
     }
   }, [cooldown]);
