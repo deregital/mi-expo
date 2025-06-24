@@ -1,7 +1,6 @@
 import { fetchClient } from '@/server/fetchClient';
 import { publicProcedure, router } from '@/server/trpc';
 import { sendOtpSchema, verifyOtpSchema } from 'expo-backend-types';
-import { cookies } from 'next/headers';
 
 export const otpRouter = router({
   send: publicProcedure.input(sendOtpSchema).mutation(async ({ input }) => {
@@ -18,9 +17,6 @@ export const otpRouter = router({
     if (data.response.hasVerified && !data.response.hasUsername) {
       return data.response;
     }
-
-    const cookieStore = await cookies();
-    cookieStore.set('phoneNumber', input.phoneNumber);
 
     return data.response;
   }),
