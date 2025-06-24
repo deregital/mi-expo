@@ -6,6 +6,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  useFormField,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
@@ -17,8 +18,10 @@ import {
 import { cn } from '@/lib/utils';
 import { type Control, type FieldPath } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
+import { useFieldOptionalityCheck } from '@/utils/zod';
 
-interface SignupFormFieldProps {
+interface SignupFormFieldProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   name: FieldPath<FormSchema>;
   label: string;
   placeholder: string;
@@ -37,7 +40,10 @@ export function SignupFormField({
   inputType,
   formControl,
   validate,
+  ...restInput
 }: SignupFormFieldProps) {
+  const { schema } = useFormField();
+  const isFieldOptionalBasedOnSchema = useFieldOptionalityCheck(name, schema);
   return (
     <FormField
       control={formControl}
@@ -53,11 +59,13 @@ export function SignupFormField({
               placeholder={placeholder}
               type={inputType || 'text'}
               value={value?.toString() || ''}
+              required={!isFieldOptionalBasedOnSchema}
               className={cn(
                 inputType === 'number' &&
                   '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
               )}
               {...rest}
+              {...restInput}
             />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
