@@ -12,17 +12,18 @@ import { RadioGroup } from '@radix-ui/react-radio-group';
 import { RadioGroupItem } from '@/components/ui/radio-group';
 import Image from 'next/image';
 import { successSubmitDynamicForm } from './action';
+import { type DynamicFormType } from 'expo-backend-types';
 export default function DynamicForm({ name }: { name: string }) {
-  const role =
+  const type: DynamicFormType =
     name === 'participant'
-      ? 'participante'
+      ? 'PARTICIPANT'
       : name === 'producer'
-        ? 'productor/a'
-        : 'usuario';
+        ? 'PRODUCTION'
+        : 'PERSONAL_INFO';
 
   const [formState, setFormState] = useState<SubmitDynamicFormsDto>();
   const [errors, setErrors] = useState('');
-  const { data: form, isLoading } = trpc.dynamicForm.getByName.useQuery(name);
+  const { data: form, isLoading } = trpc.dynamicForm.getByType.useQuery(type);
   const { mutateAsync } = trpc.dynamicForm.submit.useMutation({
     onError(error) {
       setErrors(error.message);
@@ -34,7 +35,7 @@ export default function DynamicForm({ name }: { name: string }) {
   useEffect(() => {
     if (form) {
       const initForm = form.questions.map(
-        ({ created_at, updated_at, tagGroup, options, ...rest }) => ({
+        ({ created_at, updated_at, options, ...rest }) => ({
           ...rest,
           answers: [],
         }),
@@ -93,7 +94,7 @@ export default function DynamicForm({ name }: { name: string }) {
     <></>
   ) : (
     <>
-      <GoBack text={`Completá tus datos para ser ${role}`} />
+      <GoBack text={`Completá tus datos`} />
       <div className='w-full h-full flex gap-32 items-center justify-center'>
         <form className='w-full h-full max-w-md' onSubmit={handleSubmit}>
           {form?.questions.map((question, index) => {

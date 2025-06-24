@@ -1,18 +1,21 @@
 import { handleError, protectedProcedure, router } from '@/server/trpc';
-import { submitDynamicFormsSchema } from 'expo-backend-types';
+import { DynamicFormType, submitDynamicFormsSchema } from 'expo-backend-types';
 import { z } from 'zod';
 
 export const dynamicFormRouter = router({
-  getByName: protectedProcedure
-    .input(z.string())
+  getByType: protectedProcedure
+    .input(z.nativeEnum(DynamicFormType))
     .query(async ({ input, ctx }) => {
-      const { data, error } = await ctx.fetch.GET('/dynamic-form/{name}', {
-        params: {
-          path: {
-            name: input,
+      const { data, error } = await ctx.fetch.GET(
+        '/dynamic-form/by-type/{type}',
+        {
+          params: {
+            path: {
+              type: input,
+            },
           },
         },
-      });
+      );
 
       if (error) throw handleError(error);
 
@@ -37,8 +40,6 @@ export const dynamicFormRouter = router({
           body: input.input,
         },
       );
-
-      console.log(error);
 
       if (error) throw handleError(error);
 
