@@ -40,20 +40,8 @@ export function VerifyPhoneOtpClient({
     },
   });
   const sentOtpMutation = trpc.otp.send.useMutation();
-  const [otpSentFirstTime, setOtpSentFirstTime] = useState<boolean>(false);
   const [error, setError] = useState('');
-  const [cooldown, setCooldown] = useState(0);
-
-  useEffect(() => {
-    if (!otpSentFirstTime) {
-      sentOtpMutation.mutate({
-        phoneNumber: phoneNumber,
-      });
-      setOtpSentFirstTime(true);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [cooldown, setCooldown] = useState(60);
 
   const onSubmit: SubmitHandler<Pick<VerifyOtpDto, 'code'>> = (data) => {
     try {
