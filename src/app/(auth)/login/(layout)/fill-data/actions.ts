@@ -17,3 +17,7 @@ export async function signInUsernmePassword({
   });
   redirect('/');
 }
+
+export async function successSubmit() {
+  redirect('/login/verify-phone');
+}

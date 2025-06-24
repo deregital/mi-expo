@@ -1,5 +1,10 @@
-import { handleError, protectedProcedure, router } from '@/server/trpc';
-import { profileSchema } from 'expo-backend-types';
+import {
+  handleError,
+  protectedProcedure,
+  publicProcedure,
+  router,
+} from '@/server/trpc';
+import { createProfileSchema, profileSchema } from 'expo-backend-types';
 
 export const profileRouter = router({
   getById: protectedProcedure
@@ -10,6 +15,70 @@ export const profileRouter = router({
           path: {
             id: input,
           },
+        },
+      });
+
+      if (error) throw handleError(error);
+
+      return data;
+    }),
+  getByPhoneNumber: publicProcedure
+    .input(profileSchema.shape.phoneNumber)
+    .query(async ({ input, ctx }) => {
+      const { data: dataLogin, error: errorLogin } = await ctx.fetch.POST(
+        '/auth/login',
+        {
+          body: {
+            username: process.env.ADMIN_USERNAME ?? '',
+            password: process.env.ADMIN_PASSWORD ?? '',
+          },
+        },
+      );
+
+      if (errorLogin) throw handleError(errorLogin);
+
+      const { data, error } = await ctx.fetch.GET(
+        '/profile/find-by-phone-number/{phoneNumber}',
+        {
+          params: {
+            path: {
+              phoneNumber: input,
+            },
+          },
+          headers: {
+            Authorization: `Bearer ${dataLogin.backendTokens.accessToken}`,
+          },
+        },
+      );
+
+      if (error) throw handleError(error);
+      return data;
+    }),
+  createByForm: publicProcedure
+    .input(createProfileSchema)
+    .mutation(async ({ input, ctx }) => {
+      const birthDate = input.profile.birthDate?.toISOString() || null;
+      const { data: dataLogin, error: errorLogin } = await ctx.fetch.POST(
+        '/auth/login',
+        {
+          body: {
+            username: process.env.ADMIN_USERNAME ?? '',
+            password: process.env.ADMIN_PASSWORD ?? '',
+          },
+        },
+      );
+
+      if (errorLogin) throw handleError(errorLogin);
+
+      const { data, error } = await ctx.fetch.POST('/profile/create', {
+        body: {
+          profile: {
+            ...input.profile,
+            birthDate,
+          },
+        },
+        headers: {
+          Authorization: `Bearer ${dataLogin.backendTokens.accessToken}`,
         },
       });
 

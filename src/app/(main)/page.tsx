@@ -1,8 +1,9 @@
 import { InstallPWAButton } from '@/components/common/install-pwa-button';
 import { SimpleButton } from '@/components/common/simple-button';
-import { auth, signIn, signOut } from '@/server/auth';
+import { auth } from '@/server/auth';
 import { trpc } from '@/server/trpc/server';
 import Image from 'next/image';
+import { signInAction, signOutAction } from './action';
 
 export default async function Home() {
   const session = await auth();
@@ -129,21 +130,11 @@ export default async function Home() {
       />
       <InstallPWAButton />
       {session ? (
-        <form
-          action={async () => {
-            'use server';
-            await signOut();
-          }}
-        >
+        <form action={signOutAction}>
           <button type='submit'>Logout</button>
         </form>
       ) : (
-        <form
-          action={async () => {
-            'use server';
-            await signIn();
-          }}
-        >
+        <form action={signInAction}>
           <button type='submit'>Login</button>
         </form>
       )}

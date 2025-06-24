@@ -1,15 +1,9 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { DM_Sans } from 'next/font/google';
 import './globals.css';
 import { TRPCReactProvider } from '@/server/trpc/client';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const DMSans = DM_Sans({
   subsets: ['latin'],
 });
 
@@ -29,9 +23,7 @@ export default async function RootLayout({
   return (
     <TRPCReactProvider>
       <html lang='en'>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100dvh]`}
-        >
+        <body className={`${DMSans.className} antialiased h-[100dvh]`}>
           {children}
         </body>
       </html>

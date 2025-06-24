@@ -7,14 +7,11 @@ export default async function LoginLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-
   if (session?.type === 'usernamePassword') {
     redirect('/');
   }
 
   return (
-    <div className='h-[100dvh] w-full flex items-center justify-center'>
-      {children}
-    </div>
+    <div className='h-[100dvh] w-full flex justify-center'>{children}</div>
   );
 }

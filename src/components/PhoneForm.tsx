@@ -7,7 +7,7 @@ import { type SendOtpDto } from 'expo-backend-types';
 import { useRouter } from 'next/navigation';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 
-export default function VerifyPhonePage() {
+export function VerifyPhoneForm() {
   const router = useRouter();
   const { register, handleSubmit } = useForm<SendOtpDto>();
   const sendOtpMutation = trpc.otp.send.useMutation({

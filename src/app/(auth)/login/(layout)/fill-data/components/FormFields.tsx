@@ -6,6 +6,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  useFormField,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,8 +17,11 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { type Control, type FieldPath } from 'react-hook-form';
+import { Label } from '@/components/ui/label';
+import { useFieldOptionalityCheck } from '@/utils/zod';
 
-interface SignupFormFieldProps {
+interface SignupFormFieldProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   name: FieldPath<FormSchema>;
   label: string;
   placeholder: string;
@@ -36,37 +40,38 @@ export function SignupFormField({
   inputType,
   formControl,
   validate,
+  ...restInput
 }: SignupFormFieldProps) {
+  const { schema } = useFormField();
+  const isFieldOptionalBasedOnSchema = useFieldOptionalityCheck(name, schema);
   return (
     <FormField
       control={formControl}
       name={name}
       render={({ field: { value, ...rest } }) => (
         <FormItem className='space-y-0'>
-          <FormLabel>{label}</FormLabel>
+          <Label variant={'miExpoCard'}>
+            <FormLabel>{label}</FormLabel>
+          </Label>
           <FormControl>
             <Input
+              variant={'MiExpoCard'}
               placeholder={placeholder}
               type={inputType || 'text'}
               value={value?.toString() || ''}
+              required={!isFieldOptionalBasedOnSchema}
               className={cn(
                 inputType === 'number' &&
                   '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
               )}
               {...rest}
+              {...restInput}
             />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
       )}
-      rules={{
-        validate: validate
-          ? (value, formData) => {
-              return validate(value, formData);
-            }
-          : undefined,
-      }}
     />
   );
 }
@@ -104,8 +109,10 @@ export function SignupSelectField({
       name={name}
       render={({ field }) => {
         return (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
+          <FormItem className='space-y-0'>
+            <Label variant={'miExpoCard'}>
+              <FormLabel>{label}</FormLabel>
+            </Label>
             <Select
               onValueChange={(value) => {
                 field.onChange(value);
@@ -114,7 +121,7 @@ export function SignupSelectField({
               disabled={disabled}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className='border-[1px] rounded-lg rounded-tl-none border-miExpo-gray px-4 py-5'>
                   <p>
                     {field.value?.toString() !== ''
                       ? items.find((item) => item.value === field.value)?.label
