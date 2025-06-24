@@ -14,7 +14,7 @@ export const dynamicFormRouter = router({
         },
       });
 
-      if (error) handleError(error);
+      if (error) throw handleError(error);
 
       return data;
     }),
@@ -38,7 +38,9 @@ export const dynamicFormRouter = router({
         },
       );
 
-      if (error) handleError(error);
+      console.log(error);
+
+      if (error) throw handleError(error);
 
       return data;
     }),

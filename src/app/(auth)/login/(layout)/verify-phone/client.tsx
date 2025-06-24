@@ -42,6 +42,8 @@ export function VerifyPhoneOtpClient({
   const sentOtpMutation = trpc.otp.send.useMutation();
   const [otpSentFirstTime, setOtpSentFirstTime] = useState<boolean>(false);
   const [error, setError] = useState('');
+  const [cooldown, setCooldown] = useState(0);
+
   useEffect(() => {
     if (!otpSentFirstTime) {
       sentOtpMutation.mutate({
@@ -49,7 +51,9 @@ export function VerifyPhoneOtpClient({
       });
       setOtpSentFirstTime(true);
     }
-  }, [otpSentFirstTime, sentOtpMutation, phoneNumber]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit: SubmitHandler<Pick<VerifyOtpDto, 'code'>> = (data) => {
     try {
@@ -62,6 +66,24 @@ export function VerifyPhoneOtpClient({
         setError(error.message);
       }
       setError((error as Error).message);
+    }
+  };
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const interval = setInterval(() => {
+        setCooldown((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [cooldown]);
+
+  const handleResend = () => {
+    if (cooldown === 0) {
+      sentOtpMutation.mutate({
+        phoneNumber: phoneNumber,
+      });
+      setCooldown(30);
     }
   };
 
@@ -106,19 +128,14 @@ export function VerifyPhoneOtpClient({
                 variant={'link'}
                 type='button'
                 disabled={
-                  sentOtpMutation.isPending || verifyOtpMutation.isPending
+                  sentOtpMutation.isPending ||
+                  verifyOtpMutation.isPending ||
+                  cooldown > 0
                 }
                 className='underline p-0 font-semibold'
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-
-                  sentOtpMutation.mutate({
-                    phoneNumber: phoneNumber,
-                  });
-                }}
+                onClick={handleResend}
               >
-                No recibí nada
+                {cooldown > 0 ? `Reenviar en ${cooldown}s` : 'No recibí nada'}
               </Button>
             </div>
             {error && (

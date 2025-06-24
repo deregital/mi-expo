@@ -25,11 +25,13 @@ export const meRouter = router({
       );
 
       if (errorLogin) throw handleError(errorLogin);
-      const birthDate = input.birthDate?.toISOString();
+
+      const birthDate = input.birthDate?.toISOString() || null;
+
       const { data, error } = await ctx.fetch.PATCH(`/mi-expo/me-first-time`, {
         body: {
           ...input,
-          birthDate: birthDate ?? null,
+          birthDate,
         },
         headers: {
           Authorization: `Bearer ${dataLogin.backendTokens.accessToken}`,

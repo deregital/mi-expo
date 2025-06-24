@@ -72,7 +72,7 @@ export default function ChooseRolePage() {
                   Descripción de la producción
                 </Label>
                 <textarea
-                  className='flex w-full border-input bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm file:border-0 file:bg-transparent text-base transition-colors border-[1px] rounded-lg rounded-tl-none border-miExpo-gray px-4 py-2'
+                  className='min-h-20 max-h-48 flex w-full border-input bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm file:border-0 file:bg-transparent text-base transition-colors border-[1px] rounded-lg rounded-tl-none border-miExpo-gray px-4 py-2'
                   name='description'
                   id='description'
                   placeholder='Ingresá toda la información sobre tu producción'

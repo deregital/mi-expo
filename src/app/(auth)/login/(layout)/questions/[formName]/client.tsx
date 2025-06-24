@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { trpc } from '@/server/trpc/client';
 import { type SubmitDynamicFormsDto } from 'expo-backend-types';
 import { useEffect, useState } from 'react';
-import { successSubmitDynamicForm } from './action';
 import { Label } from '@/components/ui/label';
 import clsx from 'clsx';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup } from '@radix-ui/react-radio-group';
 import { RadioGroupItem } from '@/components/ui/radio-group';
 import Image from 'next/image';
+import { successSubmitDynamicForm } from './action';
 export default function DynamicForm({ name }: { name: string }) {
   const role =
     name === 'participant'
@@ -21,8 +21,12 @@ export default function DynamicForm({ name }: { name: string }) {
         : 'usuario';
 
   const [formState, setFormState] = useState<SubmitDynamicFormsDto>();
+  const [errors, setErrors] = useState('');
   const { data: form, isLoading } = trpc.dynamicForm.getByName.useQuery(name);
   const { mutateAsync } = trpc.dynamicForm.submit.useMutation({
+    onError(error) {
+      setErrors(error.message);
+    },
     onSuccess: async () => {
       await successSubmitDynamicForm();
     },
@@ -30,7 +34,7 @@ export default function DynamicForm({ name }: { name: string }) {
   useEffect(() => {
     if (form) {
       const initForm = form.questions.map(
-        ({ created_at, updated_at, text, tagGroup, options, ...rest }) => ({
+        ({ created_at, updated_at, tagGroup, options, ...rest }) => ({
           ...rest,
           answers: [],
         }),
@@ -97,7 +101,12 @@ export default function DynamicForm({ name }: { name: string }) {
 
             return (
               <div key={index} className='space-y-0 my-4'>
-                <Label variant={'miExpoCard'}>{question.text}</Label>
+                <Label variant={'miExpoCard'}>
+                  {question.text}
+                  {question.required && (
+                    <span className='text-red-600 font-bold'>*</span>
+                  )}
+                </Label>
                 {question.multipleChoice ? (
                   question.options.map((option, index) => {
                     return (
@@ -165,6 +174,7 @@ export default function DynamicForm({ name }: { name: string }) {
               </div>
             );
           })}
+          {errors && <p className='font-bold text-red-600'>{errors}</p>}
           <Button
             className='w-full mt-6'
             disabled={isLoading}
