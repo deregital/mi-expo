@@ -6,6 +6,7 @@ import { router } from '@/server/trpc';
 import { productionRouter } from '@/server/routers/production';
 import { productionAffiliationRequestRouter } from '@/server/routers/production-affiliation-request';
 import { dynamicFormRouter } from '@/server/routers/dynamic-form';
+import { roleRouter } from './role';
 
 export const appRouter = router({
   otp: otpRouter,
@@ -15,6 +16,7 @@ export const appRouter = router({
   production: productionRouter,
   productionAfilliationRequest: productionAffiliationRequestRouter,
   dynamicForm: dynamicFormRouter,
+  role: roleRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -10,10 +10,12 @@ export type ChooseRoleActionState = {
   role?: string;
   name?: string;
   description?: string;
+  roles?: string[];
   errors?: {
     role?: string[];
     name?: string[];
     description?: string[];
+    roles?: string;
     general?: string;
   };
 };
@@ -24,13 +26,14 @@ export async function chooseRole(
 ): Promise<ChooseRoleActionState> {
   const me = await trpc.me.get();
   const role = formData.get('role') as string;
+  const roles = formData.getAll('roles[]') as string[];
 
   if (!me) {
     return {
       ...prevState,
       errors: {
         general:
-          'No se pudo encontrar el perfil, vuelva la verificar el telefono',
+          'No se pudo encontrar el perfil, vuelva a verificar el telefono',
       },
     };
   }
@@ -42,6 +45,29 @@ export async function chooseRole(
   };
 
   if (role === 'participant') {
+    if (roles.length === 0) {
+      return {
+        ...prevState,
+        errors: {
+          roles: 'Debe elegir al menos una opcion',
+        },
+      };
+    }
+
+    try {
+      await trpc.role.allocateParticipant({
+        roleIds: roles,
+        profileId: me.id,
+      });
+    } catch {
+      return {
+        ...rawData,
+        errors: {
+          general: 'Error al asignar el rol, vuelva a intentarlo',
+        },
+      };
+    }
+
     redirect('/login/questions/participant');
   } else if (role === 'producer') {
     const validatedData = createProductionSchema.safeParse(rawData);
@@ -57,6 +83,20 @@ export async function chooseRole(
     }
 
     await trpc.production.create(validatedData.data);
+
+    try {
+      await trpc.role.allocateProduction({
+        profileId: me.id,
+      });
+    } catch {
+      return {
+        ...rawData,
+        errors: {
+          general: 'Error al asignar el rol, vuelva a intentarlo',
+        },
+      };
+    }
+
     redirect('/login/questions/producer');
   }
 
